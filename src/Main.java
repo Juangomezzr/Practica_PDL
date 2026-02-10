@@ -1,15 +1,53 @@
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+import java.io.*;
+import org.antlr.v4.runtime.*;
+/*
+El nombre ClasePrincipal es arbitrario, escoge el que prefieras.
+Sustituye Numbers por el nombre del fichero que contiene la especificación de la gramática ANTLR
+(extensión .g4)
+*/
 public class Main {
     public static void main(String[] args) {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        System.out.printf("Hello and welcome!");
+        try{
+            // Preparar el fichero de entrada para asignarlo al analizador léxico
+            CharStream input = CharStreams.fromFileName(args[0]);
+            // Crear el objeto correspondiente al analizador léxico con el fichero de
+            // entrada
+            practicaLexer analex = new practicaLexer(input);
+            // Identificar al analizador léxico como fuente de tokens para el
+            // sintactico
+            CommonTokenStream tokens = new CommonTokenStream(analex);
+            // Crear el objeto correspondiente al analizador sintáctico
+            practicaParser anasint = new practicaParser(tokens);
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            System.out.println("i = " + i);
+
+
+
+            /*
+            Si se quiere pasar al analizador algún objeto externo con el que trabajar,
+            este deberá ser de una clase del mismo paquete
+            Aquí se le llama "sintesis", pero puede ser cualquier nombre.
+            NumbersParser anasint = new NumbersParser(tokens, new sintesis());
+            */
+            /*
+            Comenzar el análisis llamando al axioma de la gramática
+            Atención, sustituye "AxiomaDeLaGramatica" por el nombre del axioma de tu
+            gramática
+            */
+            System.out.println("<!DOCTYPE html>\n<html>\n<head>\n   <title>MarkDown3HTML</title>\n<style>\n    .bold {font-weight: bold;}\n  .ital {font-style: italic;}\n</style>\n</head>\n<body>");
+
+            anasint.axioma();
+
+            System.out.println("</body>\n</html>");
+
+        } catch (org.antlr.v4.runtime.RecognitionException e) {
+            //Fallo al reconocer la entrada
+            System.err.println("REC " + e.getMessage());
+        } catch (IOException e) {
+            //Fallo de entrada/salida
+            System.err.println("IO " + e.getMessage());
+        } catch (java.lang.RuntimeException e) {
+            //Cualquier otro fallo
+            System.err.println("RUN " + e.getMessage());
         }
     }
 }
