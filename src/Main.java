@@ -5,6 +5,9 @@ El nombre ClasePrincipal es arbitrario, escoge el que prefieras.
 Sustituye Numbers por el nombre del fichero que contiene la especificación de la gramática ANTLR
 (extensión .g4)
 */
+
+
+//Hola
 public class Main {
     public static void main(String[] args) {
         try{
@@ -33,11 +36,9 @@ public class Main {
             Atención, sustituye "AxiomaDeLaGramatica" por el nombre del axioma de tu
             gramática
             */
-            System.out.println("<!DOCTYPE html>\n<html>\n<head>\n   <title>MarkDown3HTML</title>\n<style>\n    .bold {font-weight: bold;}\n  .ital {font-style: italic;}\n</style>\n</head>\n<body>");
 
             anasint.axioma();
 
-            System.out.println("</body>\n</html>");
 
         } catch (org.antlr.v4.runtime.RecognitionException e) {
             //Fallo al reconocer la entrada
