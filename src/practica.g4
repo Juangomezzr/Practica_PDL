@@ -3,37 +3,39 @@ grammar practica;
 axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT)* EOF;
 
 /*
+
+    no
     prg ::= "PROGRAM" IDENT ";"
             dcllist cabecera sentlist "END"
             "PROGRAM" IDENT subproglist
+
+    si
     dcllist ::= ʎ | dcl dcllist
 
-
+    no
     cabecera ::= ʎ | "INTERFACE" cablist "END" "INTERFACE"
     cablist ::= decproc decsubprog | decfun decsubprog
     decsubprog ::= ʎ | decproc decsubprog | decfun decsubprog
     sentlist ::= sent | sentlist sent
 
 
-
 X -> Xa | b
 
 x -> bX'
 x' -> aX' | ;
-
-
-
-
-
 */
 
+//Partes programa
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
+dcllist: | dcl dcllist; //R
+cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
+cablist:'cablist';
+decsubprog:'decsubprog';
+sentlist:'sentlist';
 
-cabecera: 'cabecera';
 
-
-
-
-
+subproglist: 'subproglist';
+dcl: 'dcl';
 
 
 
