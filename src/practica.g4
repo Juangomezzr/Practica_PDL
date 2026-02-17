@@ -15,7 +15,7 @@ NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
 COMMENT: '!' ~[\n\r]* ('\n' | '\r');
 
 //Identifecadores
-IDENT: [a-zA-Z]+ [a-zA-Z0-9_]* ~[ñÑçÇ];
+IDENT: [a-zA-Z]+ [a-zA-Z0-9_]*;
 
 //Strings
 STRING_CONSTANT: '\''   (~['\n\r] | '\'\'' )* '\''
