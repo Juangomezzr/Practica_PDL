@@ -2,6 +2,40 @@ grammar practica;
 
 axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT)* EOF;
 
+/*
+    prg ::= "PROGRAM" IDENT ";"
+            dcllist cabecera sentlist "END"
+            "PROGRAM" IDENT subproglist
+    dcllist ::= ʎ | dcl dcllist
+
+
+    cabecera ::= ʎ | "INTERFACE" cablist "END" "INTERFACE"
+    cablist ::= decproc decsubprog | decfun decsubprog
+    decsubprog ::= ʎ | decproc decsubprog | decfun decsubprog
+    sentlist ::= sent | sentlist sent
+
+
+
+X -> Xa | b
+
+x -> bX'
+x' -> aX' | ;
+
+
+
+
+
+*/
+
+
+cabecera: 'cabecera';
+
+
+
+
+
+
+
 
 
 //Constantes numericas
