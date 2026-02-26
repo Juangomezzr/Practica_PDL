@@ -1,3 +1,9 @@
+
+
+
+---------------------------------------------------------------------------------|
+JUAN                                                                             |
+---------------------------------------------------------------------------------|
 - CAB( sent ) = { IDENT, proc_call }
 - CAB( exp ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
 - CAB( exp_P ) = { '+','-','*','/', lambda }
@@ -22,7 +28,7 @@
 - SIG( subproglist ) = TO DO
 - SIG( codproc ) = { 'FUNCTION','SUBROUTINE' } + SIG(subproglist)
 - SIG( codfun ) = {'FUNCTION','SUBROUTINE'} + SIG(subproglist)
-
+---------------------------------------------------------------------------------
 
 
 
