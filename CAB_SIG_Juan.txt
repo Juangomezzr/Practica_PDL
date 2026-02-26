@@ -1,0 +1,34 @@
+- CAB( sent ) = { IDENT, proc_call }
+- CAB( exp ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+- CAB( exp_P ) = { '+','-','*','/', lambda }
+- CAB( op ) = { '+', '-', '*', '/' }
+- CAB(factor) = {NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+- CAB( explist ) = { , , lambda}
+- CAB( proc_call ) = { 'CALL' }
+- CAB( subpparamlist ) = { '(', lambda }
+- CAB( subproglist ) = {'FUNCTION','SUBROUTINE',lambda}
+- CAB( codproc ) = {'SUBROUTINE'}
+- CAB( codfun ) = {'FUNCTION'} 
+
+
+- SIG( sent ) = {IDENT, 'proc_call', 'END'}
+- SIG( exp ) = { ';','+','-','*','/', ')', ','}
+- SIG( exp_P ) = { ';','+','-','*','/', ')', ','}
+- SIG( op ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+- SIG(factor) = {'+','-','*','/', ',', ';'}
+- SIG( explist ) = { ';','+','-','*','/', ')', ','}
+- SIG( proc_call ) = { ';' }
+- SIG( subpparamlist ) = { ';' }
+- SIG( subproglist ) = TO DO
+- SIG( codproc ) = { 'FUNCTION','SUBROUTINE' } + SIG(subproglist)
+- SIG( codfun ) = {'FUNCTION','SUBROUTINE'} + SIG(subproglist)
+
+
+
+
+
+
+
+
+
+
