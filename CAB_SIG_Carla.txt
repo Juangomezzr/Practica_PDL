@@ -1,1 +1,33 @@
-CAB
+
+
+
+---------------------------------------------------------------------------------|
+CARLA                                                                            |
+---------------------------------------------------------------------------------|
+- CAB( charlength ) = { '(', lambda }
+- CAB( varlist ) = { IDENT }
+- CAB( varlist_P ) = { ',', lambda }
+- CAB( init ) = { '=', lambda }
+- CAB( decproc ) = { 'SUBROUTINE' }
+- CAB( formal_paramlist ) = { '(', lambda }
+- CAB( nomparamlist ) = { IDENT }
+- CAB( dec_s_paramlist ) = { 'INTEGER', 'REAL', 'CHARACTER', lambda }
+- CAB( tipoparam ) = { 'IN', 'OUT', 'INOUT' }
+- CAB( decfun ) = { 'FUNCTION' }
+- CAB( dec_f_paramlist ) = { 'INTEGER', 'REAL', 'CHARACTER', lambda } 
+
+
+- SIG( charlength ) = {  }
+- SIG( varlist ) = {  }
+- SIG( varlist_P ) = {  }
+- SIG( init ) = {  }
+- SIG( decproc ) = {  }
+- SIG( formal_paramlist ) = {  }
+- SIG( nomparamlist ) = {  }
+- SIG( dec_s_paramlist ) = {  }
+- SIG( tipoparam ) = {  }
+- SIG( decfun ) = {  } 
+- SIG( dec_f_paramlist ) = {  } 
+---------------------------------------------------------------------------------
+
+
