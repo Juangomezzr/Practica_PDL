@@ -17,17 +17,17 @@ CARLA                                                                           
 - CAB( dec_f_paramlist ) = { 'INTEGER', 'REAL', 'CHARACTER', lambda } 
 
 
-- SIG( charlength ) = {  }
-- SIG( varlist ) = {  }
-- SIG( varlist_P ) = {  }
-- SIG( init ) = {  }
-- SIG( decproc ) = {  }
-- SIG( formal_paramlist ) = {  }
-- SIG( nomparamlist ) = {  }
-- SIG( dec_s_paramlist ) = {  }
-- SIG( tipoparam ) = {  }
-- SIG( decfun ) = {  } 
-- SIG( dec_f_paramlist ) = {  } 
+- SIG( charlength ) = SIG(tipo)
+- SIG( varlist ) = { ';' }
+- SIG( varlist_P ) = { ';' }
+- SIG( init ) = { ',' }
+- SIG( decproc ) = TO DO
+- SIG( formal_paramlist ) = SIG(decproc)
+- SIG( nomparamlist ) = { ')' }
+- SIG( dec_s_paramlist ) = { 'END' } + 
+- SIG( tipoparam ) = { ')' }
+- SIG( decfun ) = TO DO
+- SIG( dec_f_paramlist ) = { 'END' } +
 ---------------------------------------------------------------------------------
 
 
