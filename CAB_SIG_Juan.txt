@@ -22,12 +22,49 @@ JUAN                                                                            
 - SIG( exp_P ) = { ';','+','-','*','/', ')', ','}
 - SIG( op ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
 - SIG(factor) = {'+','-','*','/', ',', ';'}
-- SIG( explist ) = { ';','+','-','*','/', ')', ','}
+- SIG( explist ) = { ')'}
 - SIG( proc_call ) = { ';' }
 - SIG( subpparamlist ) = { ';' }
-- SIG( subproglist ) = TO DO
-- SIG( codproc ) = { 'FUNCTION','SUBROUTINE' } + SIG(subproglist)
-- SIG( codfun ) = {'FUNCTION','SUBROUTINE'} + SIG(subproglist)
+- SIG( subproglist ) = { $ } // PREGUNTAR
+- SIG( codproc ) = { 'FUNCTION','SUBROUTINE', $ }
+- SIG( codfun ) = {'FUNCTION','SUBROUTINE', $}
+
+
+- DIR( SENT : IDENT '=' exp ';'  ) = { IDENT }
+- DIR( SENT : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
+
+- DIR( exp : factor exp_p) = CAB( factor ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+- DIR( exp_p : op exp exp_p) = CAB(op) = { '+', '-', '*', '/' }
+- DIR( exp_p : lambda ) = SIG( exp_p ) = { ';','+','-','*','/', ')', ',' }
+
+- DIR( op : '+') = { '+' }
+- DIR( op : '-') = { '-' }
+- DIR( op : '*') = { '*' }
+- DIR( op : '/') = { '/' }
+
+- DIR( factor : simpvalue ) = CAB( simpvalue ) = { NUM_INT_CONST ,  NUM_REAL_CONST , STRING_CONSTANT }
+- DIR( factor : '(' exp ')' ) = { '(' }
+- DIR( factor : IDENT '(' exp explist ')' ) = { IDENT }
+- DIR( factor : IDENT ) = { IDENT }
+
+- DIR( explist : ',' exp explist ) = { ',' }
+- DIR( explist : lambda ) = SIG( explist ) =  { ')'}
+
+- DIR( subpparamlist : '(' exp explist ')' ) = { '(' }
+- DIR( subpparamlist : lambda ) = SIG( subpparamlist ) = { ';' }
+
+- DIR( subproglist : codproc subproglist) = CAB( codproc ) = {'SUBROUTINE'}
+- DIR( subproglist : codfun subproglist) = CAB( codfun ) = {'FUNCTION'}
+- DIR( subproglist : lambda) = SIG( subproglist ) = { '$' }
+
+- DIR( codproc : 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sentlist 'END' 'SUBROUTINE' IDENT )
+    = { 'SUBROUTINE' }
+- DIR( codfun : codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT)
+    = { 'FUNCTION' }
+
+
+
+
 ---------------------------------------------------------------------------------
 
 
