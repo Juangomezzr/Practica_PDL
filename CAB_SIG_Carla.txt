@@ -28,6 +28,38 @@ CARLA                                                                           
 - SIG( tipoparam ) = { ')' }
 - SIG( decfun ) = TO DO
 - SIG( dec_f_paramlist ) = { 'END' } +
+
+
+- DIR( charlength : lambda  ) = SIG( charlength ) =
+- DIR( charlength : '(' NUM_INT_CONST ')') = { '(' }
+
+- DIR( varlist : IDENT init varlist_P ) = { IDENT }
+
+- DIR( varlist_P : lambda) = SIG( varlist_P ) = { IDENT }
+- DIR( varlist_P : ',' IDENT init varlist_P ) = { ',' }
+
+- DIR( init : lambda ) = SIG( init ) = { ',' }
+- DIR( init : '=' simpvalue ) = { '=' }
+
+- DIR( decproc : 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT ) = { 'SUBROUTINE' }
+
+- DIR( formal_paramlist : lambda ) = SIG( formal_paramlist ) = 
+- DIR( formal_paramlist : '(' nomparamlist ')' ) = { '(' }
+
+- DIR( nomparamlist : IDENT ) = { IDENT }
+- DIR( nomparamlist : IDENT ',' nomparamlist ) = { IDENT }
+
+- DIR( dec_s_paramlist : lambda ) = SIG( dec_s_paramlist ) = 
+- DIR( dec_s_paramlist : tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( tipoparam : 'IN' ) = { 'IN' }
+- DIR( tipoparam : 'OUT' ) = { 'OUT' }
+- DIR( tipoparam : 'INOUT' ) = { 'INOUT' }
+
+- DIR( decfun : 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT ) = { 'FUNCTION' }
+
+- DIR( dec_f_paramlist : lambda ) = SIG( dec_f_paramlist ) = 
+- DIR( dec_f_paramlist : tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 ---------------------------------------------------------------------------------
 
 
