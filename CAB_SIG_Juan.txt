@@ -4,7 +4,7 @@
 ---------------------------------------------------------------------------------|
 JUAN                                                                             |
 ---------------------------------------------------------------------------------|
-- CAB( sent ) = { IDENT, proc_call }
+- CAB( sent ) = { IDENT, 'CALL' }
 - CAB( exp ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
 - CAB( exp_P ) = { '+','-','*','/', lambda }
 - CAB( op ) = { '+', '-', '*', '/' }
@@ -17,7 +17,7 @@ JUAN                                                                            
 - CAB( codfun ) = {'FUNCTION'} 
 
 
-- SIG( sent ) = {IDENT, 'proc_call', 'END'}
+- SIG( sent ) = {IDENT, 'CALL', 'END'}
 - SIG( exp ) = { ';','+','-','*','/', ')', ','}
 - SIG( exp_P ) = { ';','+','-','*','/', ')', ','}
 - SIG( op ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }

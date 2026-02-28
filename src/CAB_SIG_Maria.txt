@@ -1,0 +1,43 @@
+
+
+
+---------------------------------------------------------------------------------|
+María                                                                            |
+---------------------------------------------------------------------------------|
+- CAB( prg ) = { 'PROGRAM' }
+- CAB( dcllist ) = CAB ( dcl ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- CAB( cabecera ) = { 'INTERFACE', lambda }
+- CAB( cablist ) = CAB( decproc ) U CAB( decfun ) = { 'SUBROUTINE', 'FUNCTION' }
+- CAB( decsubprog ) = { lambda } U CAB( decproc ) U CAB( decfunc ) = { lambda, 'SUBROUTINE', 'FUNCTION' }
+- CAB( sentlist ) = CAB( sent ) = {  IDENT, 'CALL' }
+- CAB( sentlist_P ) = CAB( sent ) U { lambda } = {  IDENT, 'CALL', lambda }
+- CAB( dcl ) = CAB( defcte ) U CAB( defvar ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- CAB( defcte ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- CAB( ctelist ) = { lambda, ',' }
+- CAB( simpvalue ) = { NUM_INT_CONST, NUM_REAL_CONST, STRING_CONSTANT }
+- CAB( defvar ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+
+
+- SIG( prg ) = { $ }
+- SIG( dcllist ) =  { 'INTERFACE', IDENT, 'CALL' } //REVISAR
+- SIG( cabecera ) = {  IDENT, 'CALL' }
+- SIG( cablist ) = { 'END' }
+- SIG( decsubprog ) = { 'END' }
+- SIG( sentlist ) = { 'END', IDENT }
+- SIG( sentlist_P ) = {'END', IDENT }
+- SIG( dcl ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- SIG( defcte ) = SIG( dcl ) = { 'INTEGER', 'REAL', 'CHARACTER' } //REVISAR 
+- SIG( ctelist ) = { ';' }  
+- SIG( simpvalue ) = SIG( ctelist ) U CAB( ctelist ';') U SIG( init ) U SIG( factor )= {'+','-','*','/', ',', ';'} //REVISAR
+- SIG( defvar ) = SIG( dcl ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- SIG( tipo ) = { ',', '::' }
+
+
+
+- DIR( prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist ) = { 'PROGRAM' }
+
+---------------------------------------------------------------------------------
+
+
