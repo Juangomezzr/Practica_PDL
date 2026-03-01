@@ -38,6 +38,42 @@ María                                                                          
 
 - DIR( prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist ) = { 'PROGRAM' }
 
+- DIR( dcllist : lambda) = { 'INTERFACE', IDENT, 'CALL' }//DEPENDE DE SIG dcllist
+- DIR( dcllist : dcl dcllist) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( cabecera : lambda ) = {  IDENT, 'CALL' }
+- DIR( cabecera : 'INTERFACE' cablist 'END' 'INTERFACE' ) = { 'INTERFACE' }
+
+- DIR( cablist : decproc decsubprog ) = { 'SUBROUTINE' }
+- DIR( cablist : decfun decsubprog ) = { 'FUNCTION' }
+
+- DIR( decsubprog : lambda ) = { 'END' }
+- DIR( decsubprog : decproc decsubprog ) = { 'SUBROUTINE' }
+- DIR( decsubprog : decfun decsubprog ) = { 'FUNCTION' }
+
+- DIR( sentlist : sent sentlist_P) = { IDENT, 'CALL' }
+
+- DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDEN
+- DIR( sentlist_P : lambda ) = { 'END', IDENT }
+
+- DIR( dcl : defcte ) = { 'INTEGER', 'REAL', 'CHARACTER' } //coinciden
+- DIR( dcl : defvar ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( defcte : tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' ) = { 'INTEGER', 'REAL', 'CHARACTER' } //REVISAR 
+
+- DIR( ctelist : ',' IDENT '=' simpvalue ctelist; ) = { ',' }  
+- DIR( ctelist : lambda ) = { ';' }
+
+- DIR( simpvalue : NUM_INT_CONST ) = { NUM_INT_CONST }
+- DIR( simpvalue : NUM_REAL_CONST ) = { NUM_REAL_CONST }
+- DIR( simpvalue : STRING_CONSTANT ) = { STRING_CONSTANT }
+
+- DIR( defvar: tipo '::' varlist  ';' ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( tipo: 'INTEGER' ) = { 'INTEGER' }
+- DIR( tipo: 'REAL' ) = { 'REAL' }
+- DIR( tipo: 'CHARACTER' ) = { 'CHARACTER' }
+
 ---------------------------------------------------------------------------------
 
 
