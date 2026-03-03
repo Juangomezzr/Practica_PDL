@@ -69,7 +69,7 @@ dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 //Zona de sentencias de programas
 sent : IDENT '=' exp ';' | proc_call ';';
 exp: factor exp_P;
-exp_P: op factor exp_P | ;
+exp_P: op factor exp_P| ; // factorizacion para que el siguiente de exp no incluya op
 op : '+' | '-' | '*' | '/';
 factor : simpvalue | '(' exp ')' | IDENT factor_P;
 factor_P : '(' exp explist ')' | ; //explicar que factor prima se ha creado para satisfacer las condiciones de ll(1)

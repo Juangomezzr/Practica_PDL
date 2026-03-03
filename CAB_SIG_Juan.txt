@@ -18,7 +18,7 @@ JUAN                                                                            
 
 
 - SIG( sent ) = {IDENT, 'CALL', 'END'}
-- SIG( exp ) = { ';','+','-','*','/', ')', ','}
+- SIG( exp ) = {';', ')' ','}
 - SIG( exp_P ) = { ';','+','-','*','/', ')', ','}
 - SIG( op ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
 - SIG (factor) = {'+','-','*','/', ',', ';'}
@@ -34,8 +34,9 @@ JUAN                                                                            
 - DIR( SENT : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
 
 - DIR( exp : factor exp_p) = CAB( factor ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+
 - DIR( exp_p : op exp exp_p) = CAB(op) = { '+', '-', '*', '/' }
-- DIR( exp_p : lambda ) = SIG( exp_p ) = { ';','+','-','*','/', ')', ',' }
+- DIR( exp_p : lambda ) = SIG( exp_p ) = { ')', ',', ';' }
 
 - DIR( op : '+') = { '+' }
 - DIR( op : '-') = { '-' }
