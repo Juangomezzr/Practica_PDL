@@ -56,10 +56,12 @@ María                                                                          
 - DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDEN
 - DIR( sentlist_P : lambda ) = { 'END', IDENT }
 
-- DIR( dcl : defcte ) = { 'INTEGER', 'REAL', 'CHARACTER' } //coinciden
-- DIR( dcl : defvar ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- DIR( dcl : tipo def_P ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 
-- DIR( defcte : tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' ) = { 'INTEGER', 'REAL', 'CHARACTER' } //REVISAR 
+- DIR( def_P: defcte ) = { ',' }
+- DIR( def_P: defvar ) = { '::' }
+
+- DIR( defcte : ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' ) = { ',' }
 
 - DIR( ctelist : ',' IDENT '=' simpvalue ctelist; ) = { ',' }  
 - DIR( ctelist : lambda ) = { ';' }
@@ -68,7 +70,7 @@ María                                                                          
 - DIR( simpvalue : NUM_REAL_CONST ) = { NUM_REAL_CONST }
 - DIR( simpvalue : STRING_CONSTANT ) = { STRING_CONSTANT }
 
-- DIR( defvar: tipo '::' varlist  ';' ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+- DIR( defvar: '::' varlist  ';' ) = { '::' }
 
 - DIR( tipo: 'INTEGER' ) = { 'INTEGER' }
 - DIR( tipo: 'REAL' ) = { 'REAL' }

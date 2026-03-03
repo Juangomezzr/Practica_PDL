@@ -35,11 +35,14 @@ sentlist: sent sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones
-dcl: defcte | defvar;
-defcte: tipo ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';';
+// eliminamos dcl: defcte | defvar; como los directores coincidían factorizamos tipo en dcl y creamos una nueva
+//regla def_P con las funciones sin tipo
+dcl : tipo def_P;
+def_P: defcte | defvar;
+defcte:  ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';';
 ctelist:  | ',' IDENT '=' simpvalue ctelist;
 simpvalue: NUM_INT_CONST | NUM_REAL_CONST | STRING_CONSTANT;
-defvar: tipo '::' varlist  ';';
+defvar: '::' varlist  ';';
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
 charlength: | '(' NUM_INT_CONST ')';
 varlist: IDENT init varlist_P;
