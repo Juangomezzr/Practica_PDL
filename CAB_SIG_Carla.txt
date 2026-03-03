@@ -30,7 +30,7 @@ CARLA                                                                           
 - SIG( dec_f_paramlist ) = { 'END' } + CAB'( dcllist ) + CAB'( sentlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
 
 
-- DIR( charlength : lambda  ) = SIG( charlength ) =
+- DIR( charlength : lambda  ) = SIG( charlength ) = { ',', '::' }
 - DIR( charlength : '(' NUM_INT_CONST ')') = { '(' }
 
 - DIR( varlist : IDENT init varlist_P ) = { IDENT }
