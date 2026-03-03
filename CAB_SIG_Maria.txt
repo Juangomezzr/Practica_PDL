@@ -53,7 +53,7 @@ María                                                                          
 
 - DIR( sentlist : sent sentlist_P) = { IDENT, 'CALL' }
 
-- DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDENT
+- DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDENT pero no lo podemos moficar porque el problema esta en codfun y mofificarla se sale de los conteniddos vistos en clase entonces seria LL(k)
 - DIR( sentlist_P : lambda ) = { 'END', IDENT }
 
 - DIR( dcl : tipo def_P ) = { 'INTEGER', 'REAL', 'CHARACTER' }
