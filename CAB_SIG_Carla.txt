@@ -46,10 +46,10 @@ CARLA                                                                           
 - DIR( formal_paramlist : lambda ) = SIG( formal_paramlist ) = { 'END' }
 - DIR( formal_paramlist : '(' nomparamlist ')' ) = { '(' }
 
-- DIR( nomparamlist : IDENT ) = { IDENT }
+- DIR( nomparamlist : IDENT ) = { IDENT } // COINCIDEN
 - DIR( nomparamlist : IDENT ',' nomparamlist ) = { IDENT }
 
-- DIR( dec_s_paramlist : lambda ) = SIG( dec_s_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
+- DIR( dec_s_paramlist : lambda ) = SIG( dec_s_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' } //COINCIDEN PARCIALMENTE
 - DIR( dec_s_paramlist : tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 
 - DIR( tipoparam : 'IN' ) = { 'IN' }
@@ -58,7 +58,7 @@ CARLA                                                                           
 
 - DIR( decfun : 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT ) = { 'FUNCTION' }
 
-- DIR( dec_f_paramlist : lambda ) = SIG( dec_f_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
+- DIR( dec_f_paramlist : lambda ) = SIG( dec_f_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' } //COINCIDEN PARCIALMENTE
 - DIR( dec_f_paramlist : tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 ---------------------------------------------------------------------------------
 
