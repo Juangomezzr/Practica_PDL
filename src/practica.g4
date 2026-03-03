@@ -61,7 +61,8 @@ sent : IDENT '=' exp ';' | proc_call ';';
 exp: factor exp_P;
 exp_P: op exp exp_P| ;
 op : '+' | '-' | '*' | '/';
-factor : simpvalue | '(' exp ')' | IDENT '(' exp explist ')' | IDENT;
+factor : simpvalue | '(' exp ')' | IDENT factor_P;
+factor_P : '(' exp explist ')' | ; //explicar que factor prima se ha creado para satisfacer las condiciones de ll(1)
 explist : ',' exp explist | ;
 proc_call : 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;

@@ -21,11 +21,11 @@ JUAN                                                                            
 - SIG( exp ) = { ';','+','-','*','/', ')', ','}
 - SIG( exp_P ) = { ';','+','-','*','/', ')', ','}
 - SIG( op ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
-- SIG(factor) = {'+','-','*','/', ',', ';'}
+- SIG (factor) = {'+','-','*','/', ',', ';'}
 - SIG( explist ) = { ')'}
 - SIG( proc_call ) = { ';' }
 - SIG( subpparamlist ) = { ';' }
-- SIG( subproglist ) = { $ } // PREGUNTAR
+- SIG( subproglist ) = { $ }
 - SIG( codproc ) = { 'FUNCTION','SUBROUTINE', $ }
 - SIG( codfun ) = {'FUNCTION','SUBROUTINE', $}
 
@@ -44,8 +44,11 @@ JUAN                                                                            
 
 - DIR( factor : simpvalue ) = CAB( simpvalue ) = { NUM_INT_CONST ,  NUM_REAL_CONST , STRING_CONSTANT }
 - DIR( factor : '(' exp ')' ) = { '(' }
-- DIR( factor : IDENT '(' exp explist ')' ) = { IDENT }
 - DIR( factor : IDENT ) = { IDENT }
+
+- DIR( factor_P : '(' exp explist ')' ) = { '(' }
+- DIR( factor_P : lambda ) = {'+','-','*','/', ',', ';'}
+
 
 - DIR( explist : ',' exp explist ) = { ',' }
 - DIR( explist : lambda ) = SIG( explist ) =  { ')'}
