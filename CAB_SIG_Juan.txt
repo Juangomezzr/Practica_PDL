@@ -48,7 +48,7 @@ JUAN                                                                            
 - DIR( factor : IDENT ) = { IDENT }
 
 - DIR( factor_P : '(' exp explist ')' ) = { '(' }
-- DIR( factor_P : lambda ) = {'+','-','*','/', ',', ';'}
+- DIR( factor_P : lambda ) = {'+','-','*','/', ',', ';', ')'}
 
 
 - DIR( explist : ',' exp explist ) = { ',' }
