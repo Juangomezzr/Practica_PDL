@@ -52,7 +52,14 @@ init: | '=' simpvalue;
 //Segunda zona declaraciones
 decproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
 formal_paramlist: | '(' nomparamlist ')';
-nomparamlist: IDENT | IDENT ',' nomparamlist;
+
+
+//nomparamlist: IDENT | IDENT ',' nomparamlist; factorizado condiciones LL1
+
+nomparamlist: IDENT nomparamlist_P;
+nomparamlist_P: | ',' nomparamlist;
+
+
 dec_s_paramlist: | tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist;
 tipoparam : 'IN' | 'OUT' | 'INOUT';
 decfun : 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT;
@@ -62,7 +69,7 @@ dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 //Zona de sentencias de programas
 sent : IDENT '=' exp ';' | proc_call ';';
 exp: factor exp_P;
-exp_P: op exp exp_P| ;
+exp_P: op factor exp_P | ;
 op : '+' | '-' | '*' | '/';
 factor : simpvalue | '(' exp ')' | IDENT factor_P;
 factor_P : '(' exp explist ')' | ; //explicar que factor prima se ha creado para satisfacer las condiciones de ll(1)

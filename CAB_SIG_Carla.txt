@@ -46,8 +46,10 @@ CARLA                                                                           
 - DIR( formal_paramlist : lambda ) = SIG( formal_paramlist ) = { 'END' }
 - DIR( formal_paramlist : '(' nomparamlist ')' ) = { '(' }
 
-- DIR( nomparamlist : IDENT ) = { IDENT }
-- DIR( nomparamlist : IDENT ',' nomparamlist ) = { IDENT }
+- DIR( nomparamlist : IDENT nomparamlist_P ) = { IDENT }
+
+- DIR( nomparamlist_P: lambda ) = { IDENT }
+- DIR( nomparamlist_P: ',' nomparamlist ) = { ',' }
 
 - DIR( dec_s_paramlist : lambda ) = SIG( dec_s_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
 - DIR( dec_s_paramlist : tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
