@@ -30,11 +30,24 @@ x' -> aX' | ;
 expcond : factorcond expcond_P;
 expcond_P : oplog expcond expcond_P | ;
 oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
-factorcond : exp opcomp exp | '(' expcond ')' | '.NOT.' factorcond
-| '.TRUE.' | '.FALSE.';
+factorcond : exp opcomp exp
+    | '(' expcond ')' | '.NOT.' factorcond
+    | '.TRUE.' | '.FALSE.';
+
 opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
 
+doval : NUM_INT_CONST | IDENT;
 
+casos : 'CASE' '(' etiquetas ')' sentlist casos
+    | 'CASE' 'DEFAULT' sentlist
+    | ;
+
+etiquetas : simpvalue listaetiqetas
+    | simpvalue ':' simpvalue
+    | ':' simpvalue
+    | simpvalue ':';
+
+listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 //Partes programa
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
@@ -78,7 +91,14 @@ dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 
 
 //Zona de sentencias de programas
-sent : IDENT '=' exp ';' | proc_call ';';
+sent : IDENT '=' exp ';' | proc_call ';'
+       | 'IF' '(' expcond ')' sent
+       | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
+       | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
+       | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
+       | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
+       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+
 exp: factor exp_P;
 exp_P: op factor exp_P| ; // factorizacion para que el siguiente de exp no incluya op
 op : '+' | '-' | '*' | '/';
