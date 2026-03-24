@@ -1,6 +1,6 @@
 grammar practica;
 
-axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT|prg)* EOF;
+axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT|prg|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H)* EOF;
 
 /*
 
@@ -86,10 +86,16 @@ codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlis
 //Constantes numericas
 NUM_INT_CONST: '-'? [0-9]+;
 
+//OPCIONAL
+NUM_INT_CONST_B: 'b´'[01]+'´';
+NUM_INT_CONST_O: 'o´'[0-7]+'´';
+NUM_INT_CONST_H: 'z´'[0-9A-F]+'´';
+
+
+
 NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
                 | NUM_INT_CONST ('e'|'E') NUM_INT_CONST// Exponencial
                 | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST; // Mixto
-
 //Comentarios
 COMMENT: '!' ~[\n\r]* ('\n' | '\r');
 
