@@ -69,6 +69,10 @@ María                                                                          
 - DIR( simpvalue : NUM_INT_CONST ) = { NUM_INT_CONST }
 - DIR( simpvalue : NUM_REAL_CONST ) = { NUM_REAL_CONST }
 - DIR( simpvalue : STRING_CONSTANT ) = { STRING_CONSTANT }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_O }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_H }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_B }
+
 
 - DIR( defvar: '::' varlist  ';' ) = { '::' }
 

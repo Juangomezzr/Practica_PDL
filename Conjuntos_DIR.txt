@@ -1,0 +1,106 @@
+- DIR( prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist ) = { 'PROGRAM' }
+
+- DIR( dcllist : lambda) = { 'INTERFACE', IDENT, 'CALL' }//DEPENDE DE SIG dcllist
+- DIR( dcllist : dcl dcllist) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( cabecera : lambda ) = {  IDENT, 'CALL' }
+- DIR( cabecera : 'INTERFACE' cablist 'END' 'INTERFACE' ) = { 'INTERFACE' }
+
+- DIR( cablist : decproc decsubprog ) = { 'SUBROUTINE' }
+- DIR( cablist : decfun decsubprog ) = { 'FUNCTION' }
+
+- DIR( decsubprog : lambda ) = { 'END' }
+- DIR( decsubprog : decproc decsubprog ) = { 'SUBROUTINE' }
+- DIR( decsubprog : decfun decsubprog ) = { 'FUNCTION' }
+
+- DIR( sentlist : sent sentlist_P) = { IDENT, 'CALL' }
+
+- DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDENT pero no lo podemos moficar porque el problema esta en codfun y mofificarla se sale de los conteniddos vistos en clase entonces seria LL(k)
+- DIR( sentlist_P : lambda ) = { 'END', IDENT }
+
+- DIR( dcl : tipo def_P ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( def_P: defcte ) = { ',' }
+- DIR( def_P: defvar ) = { '::' }
+
+- DIR( defcte : ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';' ) = { ',' }
+
+- DIR( ctelist : ',' IDENT '=' simpvalue ctelist; ) = { ',' }
+- DIR( ctelist : lambda ) = { ';' }
+
+- DIR( simpvalue : NUM_INT_CONST ) = { NUM_INT_CONST }
+- DIR( simpvalue : NUM_REAL_CONST ) = { NUM_REAL_CONST }
+- DIR( simpvalue : STRING_CONSTANT ) = { STRING_CONSTANT }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_O }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_H }
+- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_B }
+
+
+- DIR( charlength : lambda  ) = SIG( charlength ) = { ',', '::' }
+- DIR( charlength : '(' NUM_INT_CONST ')') = { '(' }
+
+- DIR( varlist : IDENT init varlist_P ) = { IDENT }
+
+- DIR( varlist_P : lambda) = SIG( varlist_P ) = { IDENT }
+- DIR( varlist_P : ',' IDENT init varlist_P ) = { ',' }
+
+- DIR( init : lambda ) = SIG( init ) = { ',' }
+- DIR( init : '=' simpvalue ) = { '=' }
+
+- DIR( decproc : 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT ) = { 'SUBROUTINE' }
+
+- DIR( formal_paramlist : lambda ) = SIG( formal_paramlist ) = { 'END' }
+- DIR( formal_paramlist : '(' nomparamlist ')' ) = { '(' }
+
+- DIR( nomparamlist : IDENT nomparamlist_P ) = { IDENT }
+
+- DIR( nomparamlist_P: lambda ) = { IDENT }
+- DIR( nomparamlist_P: ',' nomparamlist ) = { ',' }
+
+- DIR( dec_s_paramlist : lambda ) = SIG( dec_s_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
+- DIR( dec_s_paramlist : tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( tipoparam : 'IN' ) = { 'IN' }
+- DIR( tipoparam : 'OUT' ) = { 'OUT' }
+- DIR( tipoparam : 'INOUT' ) = { 'INOUT' }
+
+- DIR( decfun : 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT ) = { 'FUNCTION' }
+
+- DIR( dec_f_paramlist : lambda ) = SIG( dec_f_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
+- DIR( dec_f_paramlist : tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
+
+- DIR( SENT : IDENT '=' exp ';'  ) = { IDENT }
+- DIR( SENT : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
+
+- DIR( exp : factor exp_p) = CAB( factor ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
+
+- DIR( exp_p : op exp exp_p) = CAB(op) = { '+', '-', '*', '/' }
+- DIR( exp_p : lambda ) = SIG( exp_p ) = { ')', ',', ';' }
+
+- DIR( op : '+') = { '+' }
+- DIR( op : '-') = { '-' }
+- DIR( op : '*') = { '*' }
+- DIR( op : '/') = { '/' }
+
+- DIR( factor : simpvalue ) = CAB( simpvalue ) = { NUM_INT_CONST ,  NUM_REAL_CONST , STRING_CONSTANT }
+- DIR( factor : '(' exp ')' ) = { '(' }
+- DIR( factor : IDENT ) = { IDENT }
+
+- DIR( factor_P : '(' exp explist ')' ) = { '(' }
+- DIR( factor_P : lambda ) = {'+','-','*','/', ',', ';', ')'}
+
+
+- DIR( explist : ',' exp explist ) = { ',' }
+- DIR( explist : lambda ) = SIG( explist ) =  { ')'}
+
+- DIR( subpparamlist : '(' exp explist ')' ) = { '(' }
+- DIR( subpparamlist : lambda ) = SIG( subpparamlist ) = { ';' }
+
+- DIR( subproglist : codproc subproglist) = CAB( codproc ) = {'SUBROUTINE'}
+- DIR( subproglist : codfun subproglist) = CAB( codfun ) = {'FUNCTION'}
+- DIR( subproglist : lambda) = SIG( subproglist ) = { '$' }
+
+- DIR( codproc : 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sentlist 'END' 'SUBROUTINE' IDENT )
+    = { 'SUBROUTINE' }
+- DIR( codfun : codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT)
+    = { 'FUNCTION' }
