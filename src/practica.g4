@@ -25,6 +25,17 @@ x -> bX'
 x' -> aX' | ;
 */
 
+//Opcional Notable
+
+expcond : factorcond expcond_P;
+expcond_P : oplog expcond expcond_P | ;
+oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
+factorcond : exp opcomp exp | '(' expcond ')' | '.NOT.' factorcond
+| '.TRUE.' | '.FALSE.';
+opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
+
+
+
 //Partes programa
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
 dcllist: | dcl dcllist; // Recursividad solventada
@@ -86,13 +97,17 @@ codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlis
 //Constantes numericas
 NUM_INT_CONST: '-'? [0-9]+;
 
-//OPCIONAL
+//OPCIONAL NOTABLE
 NUM_INT_CONST_B: 'b´'[01]+'´';
 NUM_INT_CONST_O: 'o´'[0-7]+'´';
 NUM_INT_CONST_H: 'z´'[0-9A-F]+'´';
 
 
 
+
+
+
+//Numeros Reales
 NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
                 | NUM_INT_CONST ('e'|'E') NUM_INT_CONST// Exponencial
                 | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST; // Mixto
