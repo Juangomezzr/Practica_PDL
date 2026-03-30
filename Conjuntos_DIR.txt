@@ -104,3 +104,20 @@
     = { 'SUBROUTINE' }
 - DIR( codfun : codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT)
     = { 'FUNCTION' }
+
+- DIR( opcomp : '<' ) = { '<' }
+- DIR( opcomp : '>' ) = { '>' }
+- DIR( opcomp : '<=' ) = { '<=' }
+- DIR( opcomp : '>=' ) = { '>=' }
+- DIR( opcomp : '==' ) = { '==' }
+- DIR( opcomp : '/=' ) = { '/=' }
+
+- DIR( sent : 'IF' '(' expcond ')' sent ) = { 'IF' }
+- DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF' ) = { 'IF' }
+- DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF' ) = { 'IF' }
+- DIR( sent : 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO' ) = { 'DO' }
+- DIR( sent : 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO' ) = { 'DO' }
+- DIR( sent : 'SELECT' 'CASE' '(' expcond ')' casos 'END' 'SELECT' ) = { 'SELECT' }
+
+- DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
+- DIR( doval : 'IDENT' ) = { 'IDENT' }
