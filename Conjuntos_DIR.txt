@@ -105,6 +105,26 @@
 - DIR( codfun : codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT)
     = { 'FUNCTION' }
 
+//PARTE OPCIONAL
+
+- DIR( expcond : factorcond expcond_P ) = CAB(factorcond) = 
+    { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT, '(', IDENT, '.NOT.', '.TRUE.', '.FALSE.' }
+- DIR( expcond : lambda ) = SIG(expcond) = CAB'(expcond_P) U SIG(expcond_P) U {')'} = { '.OR.', '.AND.', '.EQV.', '.NEQV.', ')' }
+
+-DIR( expcond_P : oplog expcond expcond_P ) = { '.OR.', '.AND.', '.EQV.', '.NEQV.' }
+-DIR( expcond_P : lambda ) = SIG(expcond_P) = SIG(expcond) = { '.OR.', '.AND.', '.EQV.', '.NEQV.', ')' } -> COINCIDEN
+
+-DIR( oplog : '.OR.' ) = { '.OR.' }
+-DIR( oplog : '.AND.' ) = { '.AND.' }
+-DIR( oplog : '.EQV.' ) = { '.EQV.' }
+-DIR( oplog : '.NEQV.' ) = { '.NEQV.' }
+
+-DIR( factorcond : exp opcomp exp ) = CAB(exp) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT ,'(', IDENT }
+-DIR( factorcond : '(' expcond ')' ) = { '(' } ->COINCIDEN
+-DIR( factorcond : '.NOT.' factorcond ) = { '.NOT.' }
+-DIR( factorcond : '.TRUE.' ) = { '.TRUE.' }
+-DIR( factorcond : '.FALSE.' ) = { '.FALSE.' }
+
 - DIR( opcomp : '<' ) = { '<' }
 - DIR( opcomp : '>' ) = { '>' }
 - DIR( opcomp : '<=' ) = { '<=' }
