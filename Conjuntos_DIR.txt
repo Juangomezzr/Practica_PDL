@@ -144,7 +144,6 @@
 
 - DIR( etiquetas : simpvalue listaetiqetas) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} //REVISAR TODO
 - DIR( etiquetas : simpvalue ':' simpvalue) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} 
-- DIR( etiquetas : simpvalue ':') = { ':'} 
 - DIR( etiquetas : simpvalue ':') = CAB(simpvalue) = {'+','-','*','/', ',', ';'} 
 
 - DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
@@ -153,14 +152,3 @@
 
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
 - DIR( listaetiqetas : lambda) = {'+','-','*','/', ',', ';'}
-
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
-    | ;
-
-etiquetas : simpvalue listaetiqetas
-    | simpvalue ':' simpvalue
-    | ':' simpvalue
-    | simpvalue ':';
-
-listaetiqetas : ',' simpvalue listaetiqetas | ;
