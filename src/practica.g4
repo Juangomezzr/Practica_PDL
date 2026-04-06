@@ -3,22 +3,6 @@ grammar practica;
 axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT|prg|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H)* EOF;
 
 /*
-
-    no
-    prg ::= "PROGRAM" IDENT ";"
-            dcllist cabecera sentlist "END"
-            "PROGRAM" IDENT subproglist
-
-    si
-    dcllist ::= ʎ | dcl dcllist
-
-    no
-    cabecera ::= ʎ | "INTERFACE" cablist "END" "INTERFACE"
-    cablist ::= decproc decsubprog | decfun decsubprog
-    decsubprog ::= ʎ | decproc decsubprog | decfun decsubprog
-    sentlist ::= sent | sentlist sent
-
-
 X -> Xa | b
 
 x -> bX'
@@ -28,15 +12,14 @@ x' -> aX' | ;
 //Partes programa
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
 dcllist: | dcl dcllist; // Recursividad solventada
-cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE'; //No recursividad
+cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc decsubprog | decfun decsubprog;
 decsubprog: | decproc decsubprog | decfun decsubprog;
 sentlist: sent sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones
-// eliminamos dcl: defcte | defvar; como los directores coincidían factorizamos tipo en dcl y creamos una nueva
-//regla def_P con las funciones sin tipo
+
 dcl : tipo def_P;
 def_P: defcte | defvar;
 defcte:  ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';';
@@ -53,12 +36,8 @@ init: | '=' simpvalue;
 decproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
 formal_paramlist: | '(' nomparamlist ')';
 
-
-//nomparamlist: IDENT | IDENT ',' nomparamlist; factorizado condiciones LL1
-
 nomparamlist: IDENT nomparamlist_P;
 nomparamlist_P: | ',' nomparamlist;
-
 
 dec_s_paramlist: | tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist;
 tipoparam : 'IN' | 'OUT' | 'INOUT';
@@ -69,10 +48,10 @@ dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 //Zona de sentencias de programas
 sent : IDENT '=' exp ';' | proc_call ';';
 exp: factor exp_P;
-exp_P: op factor exp_P| ; // factorizacion para que el siguiente de exp no incluya op
+exp_P: op factor exp_P| ; 
 op : '+' | '-' | '*' | '/';
 factor : simpvalue | '(' exp ')' | IDENT factor_P;
-factor_P : '(' exp explist ')' | ; //explicar que factor prima se ha creado para satisfacer las condiciones de ll(1)
+factor_P : '(' exp explist ')' | ;
 explist : ',' exp explist | ;
 proc_call : 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
