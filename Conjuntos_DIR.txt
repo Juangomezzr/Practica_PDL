@@ -153,14 +153,3 @@
 
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
 - DIR( listaetiqetas : lambda) = {'+','-','*','/', ',', ';'}
-
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
-    | ;
-
-etiquetas : simpvalue listaetiqetas
-    | simpvalue ':' simpvalue
-    | ':' simpvalue
-    | simpvalue ':';
-
-listaetiqetas : ',' simpvalue listaetiqetas | ;
