@@ -31,9 +31,9 @@
 - DIR( simpvalue : NUM_INT_CONST ) = { NUM_INT_CONST }
 - DIR( simpvalue : NUM_REAL_CONST ) = { NUM_REAL_CONST }
 - DIR( simpvalue : STRING_CONSTANT ) = { STRING_CONSTANT }
-- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_O }
-- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_H }
-- DIR( simpvalue : STRING_CONSTANT ) = { NUM_INT_CONST_B }
+- DIR( simpvalue : NUM_INT_CONST_O ) = { NUM_INT_CONST_O }
+- DIR( simpvalue : NUM_INT_CONST_H ) = { NUM_INT_CONST_H }
+- DIR( simpvalue : NUM_INT_CONST_B ) = { NUM_INT_CONST_B }
 
 
 - DIR( charlength : lambda  ) = SIG( charlength ) = { ',', '::' }
@@ -141,3 +141,14 @@
 
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
+
+- DIR( etiquetas : simpvalue listaetiqetas) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} //REVISAR TODO
+- DIR( etiquetas : simpvalue ':' simpvalue) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} 
+- DIR( etiquetas : simpvalue ':') = CAB(simpvalue) = {'+','-','*','/', ',', ';'} 
+
+- DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
+- DIR( casos : 'CASE' 'DEFAULT' sentlist ) = {'CASE'}
+- DIR( casos : lambda) = SIG(casos) = {'END','CASE'}
+
+- DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
+- DIR( listaetiqetas : lambda) = {'+','-','*','/', ',', ';'}
