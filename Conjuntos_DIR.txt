@@ -141,8 +141,6 @@
 
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
-simpvalue: NUM_INT_CONST|NUM_INT_CONST_B|NUM_INT_CONST_H|NUM_INT_CONST_O| NUM_REAL_CONST | STRING_CONSTANT;
-
 
 - DIR( etiquetas : simpvalue listaetiqetas ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT}
 - DIR( etiquetas : simpvalue ':' simpvalue ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
