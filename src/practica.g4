@@ -10,7 +10,10 @@ x' -> aX' | ;
 */
 
 //Partes programa
-prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
+prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist
+{
+    System.out.println( "PROGRAM" +" "+ $IDENT.text +";");
+};
 dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc decsubprog | decfun decsubprog;
@@ -22,9 +25,15 @@ sentlist_P: sent sentlist_P | ;
 
 dcl : tipo def_P;
 def_P: defcte | defvar;
-defcte:  ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';';
+defcte:  ',' 'PARAMETER' '::' IDENT '=' simpvalue ctelist ';'{System.out.println($simpvalue.value);};
 ctelist:  | ',' IDENT '=' simpvalue ctelist;
-simpvalue: NUM_INT_CONST|NUM_INT_CONST_B|NUM_INT_CONST_H|NUM_INT_CONST_O| NUM_REAL_CONST | STRING_CONSTANT;
+simpvalue returns[String value]:
+    NUM_INT_CONST { $value = $NUM_INT_CONST.text;}
+    |NUM_INT_CONST_B { $value = $NUM_INT_CONST_B.text;}
+    |NUM_INT_CONST_H { $value = $NUM_INT_CONST_H.text;}
+    |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
+    | NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
+    |STRING_CONSTANT { $value = $STRING_CONSTANT.text;};
 defvar: '::' varlist  ';';
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength;
 charlength: | '(' NUM_INT_CONST ')';
@@ -63,7 +72,7 @@ codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlis
 
 
 //Constantes numericas
-NUM_INT_CONST: '-'? [0-9]+;
+NUM_INT_CONST: '-'? [0-9]+ ;
 
 //OPCIONAL
 NUM_INT_CONST_B: 'b´'[01]+'´';
