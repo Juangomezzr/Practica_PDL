@@ -2,11 +2,16 @@ import java.util.ArrayList;
 
 public class Subprograma {
     String identificador;
-    String ReturnType;
-    ArrayList<SentenciaAsignacion> SentList = new ArrayList<>();
+    String returnType;
+    ArrayList<SentenciaAsignacion> parametros = new ArrayList<>();
 
-    void mostrar(){
-        System.out.println("IDentificador: "+identificador);
+    void traducir(){
+        System.out.print(identificador);
+        System.out.print("( ");
+        for (SentenciaAsignacion s: parametros){
+            s.traduciParam();
+        }
+        System.out.println(");");
     }
 
 

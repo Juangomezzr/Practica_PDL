@@ -3,6 +3,9 @@ grammar practica;
 @parser::members{
 private Sentencia sentencia;
 private Subprograma subprog;
+private Programa program = new Programa();
+
+
 }
 
 
@@ -40,8 +43,14 @@ etiquetas : simpvalue listaetiqetas
 listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 //Partes programa
-prg: 'PROGRAM' IDENT{System.out.println( "PROGRAM" +" "+ $IDENT.text +";");}  ';'
-    dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist;
+prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
+    dcllist
+    cabecera
+    sentlist
+    'END' 'PROGRAM' IDENT
+    subproglist
+    {program.traducir();};
+
 dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc decsubprog | decfun decsubprog;
@@ -51,26 +60,27 @@ sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones
 
-dcl : tipo  def_P;
-def_P: defcte | defvar;
-defcte:  ',' 'PARAMETER' '::' IDENT  '=' simpvalue {System.out.println("#define " + $IDENT.text +" " + $simpvalue.text);}  ctelist ';' ;
-ctelist:  | ',' IDENT  '=' simpvalue {System.out.println("#define " + $IDENT.text + " " + $simpvalue.text);} ctelist  ;
+dcl : tipo def_P[$tipo.text] ;
+def_P[String t]: defcte[$t]  | defvar[$t];
+defcte[String t]: ',' 'PARAMETER' '::' IDENT   '='
+        simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t] ';' ;
+ctelist[String t]:  | ',' IDENT  '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t]  ;
 simpvalue returns[String value]:
     NUM_INT_CONST { $value = $NUM_INT_CONST.text;}
     |NUM_INT_CONST_B { $value = $NUM_INT_CONST_B.text;}
     |NUM_INT_CONST_H { $value = $NUM_INT_CONST_H.text;}
     |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
-    | NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
+    |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = " \" " + $STRING_CONSTANT.text +"\"";};
-defvar: '::' varlist  ';';
+defvar[String t]: '::' varlist[$t]  ';';
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength ;
 charlength: | '(' NUM_INT_CONST ')';
-varlist: IDENT  init {System.out.println($IDENT.text);} varlist_P ;
-varlist_P: ',' IDENT init {System.out.println($IDENT.text);} varlist_P  | ;
-init: | '=' simpvalue;
+varlist[String t]: IDENT  init {program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));}  varlist_P ;
+varlist_P: ',' IDENT init varlist_P  | ;
+init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
 //Segunda zona declaraciones
-decproc: {subprog = new Subprograma();}'SUBROUTINE'  IDENT {subprog.identificador = $IDENT.text;} formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT {subprog.mostrar();};
+decproc: 'SUBROUTINE'  IDENT  formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT ;
 formal_paramlist: | '(' nomparamlist ')';
 
 nomparamlist: IDENT nomparamlist_P;
