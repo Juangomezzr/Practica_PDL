@@ -142,10 +142,11 @@
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
 
-- DIR( etiquetas : simpvalue listaetiqetas) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} //REVISAR TODO
-- DIR( etiquetas : simpvalue ':' simpvalue) = CAB(simpvalue) = {'+','-','*','/', ',', ';'} 
-- DIR( etiquetas : simpvalue ':') = CAB(simpvalue) = {'+','-','*','/', ',', ';'}
-- DIR( etiquetas : ':' simpvalue) = CAB(simpvalue) = {':'}
+- DIR( etiquetas : simpvalue listaetiqetas ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT}
+- DIR( etiquetas : simpvalue ':' simpvalue ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
+- DIR( etiquetas : ':' simpvalue ) = {':'}
+- DIR( etiquetas : simpvalue ':') = CAB(simpvalue ) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
+
 
 - DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
 - DIR( casos : 'CASE' 'DEFAULT' sentlist ) = {'CASE'}
