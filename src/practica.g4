@@ -9,6 +9,30 @@ x -> bX'
 x' -> aX' | ;
 */
 
+//Opcional Notable
+
+expcond : factorcond expcond_P;
+expcond_P : oplog expcond expcond_P | ;
+oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
+factorcond : exp opcomp exp
+    | '(' expcond ')' | '.NOT.' factorcond
+    | '.TRUE.' | '.FALSE.';
+
+opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
+
+doval : NUM_INT_CONST | IDENT;
+
+casos : 'CASE' '(' etiquetas ')' sentlist casos
+    | 'CASE' 'DEFAULT' sentlist
+    | ;
+
+etiquetas : simpvalue listaetiqetas
+    | simpvalue ':' simpvalue
+    | ':' simpvalue
+    | simpvalue ':';
+
+listaetiqetas : ',' simpvalue listaetiqetas | ;
+
 //Partes programa
 prg: 'PROGRAM' IDENT ';' dcllist cabecera sentlist 'END' 'PROGRAM' IDENT subproglist
 {
@@ -55,7 +79,14 @@ dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
 
 
 //Zona de sentencias de programas
-sent : IDENT '=' exp ';' | proc_call ';';
+sent : IDENT '=' exp ';' | proc_call ';'
+       | 'IF' '(' expcond ')' sent
+       | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
+       | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
+       | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
+       | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
+       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+
 exp: factor exp_P;
 exp_P: op factor exp_P| ; 
 op : '+' | '-' | '*' | '/';
@@ -74,13 +105,17 @@ codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlis
 //Constantes numericas
 NUM_INT_CONST: '-'? [0-9]+ ;
 
-//OPCIONAL
+//OPCIONAL NOTABLE
 NUM_INT_CONST_B: 'b´'[01]+'´';
 NUM_INT_CONST_O: 'o´'[0-7]+'´';
 NUM_INT_CONST_H: 'z´'[0-9A-F]+'´';
 
 
 
+
+
+
+//Numeros Reales
 NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
                 | NUM_INT_CONST ('e'|'E') NUM_INT_CONST// Exponencial
                 | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST; // Mixto
