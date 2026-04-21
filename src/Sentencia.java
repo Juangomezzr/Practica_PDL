@@ -1,4 +1,5 @@
 public abstract class Sentencia {
-    abstract void traducir(); 
+
+    abstract void traducir();
 }
 

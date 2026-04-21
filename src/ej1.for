@@ -1,7 +1,5 @@
     
-    Programa: conjunto funciones
-    Funciones: conjunto sentencias
-    Sentencia: conjunto de elementos del lenguaje
+
     
 PROGRAM prog1 ;
 
@@ -14,8 +12,8 @@ CHARACTER(10) :: mensaje1 = 'Hola', mensaje2 = 'Mundo';
 
     INTERFACE
 
-        SUBROUTINE ImprimirMensaje(texto)-> texto es un string porque despues aparece CHARACTER(10)
-            CHARACTER(10), INTENT(IN) texto; -> si fuese out sería un puntero
+        SUBROUTINE ImprimirMensaje(texto)
+            CHARACTER(10), INTENT(IN) texto;
         END SUBROUTINE ImprimirMensaje
 
         FUNCTION Sumar(a, b)
@@ -26,7 +24,7 @@ CHARACTER(10) :: mensaje1 = 'Hola', mensaje2 = 'Mundo';
 
     END INTERFACE
 
-    contador = contador + 1; -> es un int esta def arriba pero se declarará en el main 
+    contador = contador + 1;
     total = total + 45.6;
     CALL ImprimirMensaje('Bienvenido');
     promedio = total / 2.0;
