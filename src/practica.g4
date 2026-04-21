@@ -1,5 +1,11 @@
 grammar practica;
 
+@parser::members{
+private Sentencia sentencia;
+private Subprograma subprog;
+}
+
+
 axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT|prg|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H)* EOF;
 
 /*
@@ -59,12 +65,12 @@ simpvalue returns[String value]:
 defvar: '::' varlist  ';';
 tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength ;
 charlength: | '(' NUM_INT_CONST ')';
-varlist: IDENT init varlist_P;
-varlist_P: ',' IDENT init varlist_P | ;
+varlist: IDENT  init {System.out.println($IDENT.text);} varlist_P ;
+varlist_P: ',' IDENT init {System.out.println($IDENT.text);} varlist_P  | ;
 init: | '=' simpvalue;
 
 //Segunda zona declaraciones
-decproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT;
+decproc: {subprog = new Subprograma();}'SUBROUTINE'  IDENT {subprog.identificador = $IDENT.text;} formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT {subprog.mostrar();};
 formal_paramlist: | '(' nomparamlist ')';
 
 nomparamlist: IDENT nomparamlist_P;
