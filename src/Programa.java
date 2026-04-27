@@ -3,6 +3,7 @@ import java.util.ArrayList;
 public class Programa {
     String ident;
     ArrayList<SentenciaAsignacion> Constlist = new ArrayList<>();
+    ArrayList<Subprograma> SubProgList = new ArrayList<>();
     Subprograma main  =  new Subprograma();
     public void traducir(){
 
@@ -17,6 +18,9 @@ public class Programa {
 
         main.traducir();
 
+        for(int i = 0; i < SubProgList.size(); i++) {
+            SubProgList.get(i).traducir();
 
+        }
     }
 }

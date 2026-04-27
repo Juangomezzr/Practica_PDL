@@ -2,7 +2,7 @@ grammar practica;
 
 @parser::members{
 private Sentencia sentencia;
-private Subprograma subprog;
+private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
 
 
@@ -53,8 +53,8 @@ prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
 
 dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
-cablist: decproc decsubprog | decfun decsubprog;
-decsubprog: | decproc decsubprog | decfun decsubprog;
+cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
+decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 sentlist: sent sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
@@ -62,8 +62,7 @@ sentlist_P: sent sentlist_P | ;
 
 dcl : tipo def_P[$tipo.text] ;
 def_P[String t]: defcte[$t]  | defvar[$t];
-defcte[String t]: ',' 'PARAMETER' '::' IDENT   '='
-        simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t] ';' ;
+defcte[String t]: ',' 'PARAMETER' '::' IDENT   '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t] ';' ;
 ctelist[String t]:  | ',' IDENT  '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t]  ;
 simpvalue returns[String value]:
     NUM_INT_CONST { $value = $NUM_INT_CONST.text;}
@@ -80,16 +79,16 @@ varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
 //Segunda zona declaraciones
-decproc: 'SUBROUTINE'  IDENT  formal_paramlist dec_s_paramlist 'END' 'SUBROUTINE' IDENT ;
+decproc:  'SUBROUTINE'{subprog.returnType = "VOID";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
 formal_paramlist: | '(' nomparamlist ')';
 
-nomparamlist: IDENT nomparamlist_P;
+nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text)); } nomparamlist_P;
 nomparamlist_P: | ',' nomparamlist;
 
-dec_s_paramlist: | tipo ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist;
+dec_s_paramlist[int i]: | tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist[$i +1];
 tipoparam : 'IN' | 'OUT' | 'INOUT';
-decfun : 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';' dec_f_paramlist 'END' 'FUNCTION' IDENT;
-dec_f_paramlist:  tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist | ;
+decfun : 'FUNCTION'  IDENT {subprog.identificador = $IDENT.text;} '(' nomparamlist ')' tipo {subprog.returnType = $tipo.text;} '::' IDENT';' dec_f_paramlist[0] 'END' 'FUNCTION' IDENT;
+dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist[$i + 1] | ;
 
 
 //Zona de sentencias de programas
@@ -112,8 +111,8 @@ subpparamlist: '(' exp explist ')' | ;
 
 //Zona de implemetenacion de funciones
 subproglist:  codproc subproglist | codfun subproglist | ; // vhsuivwhjui
-codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist dcllist sentlist 'END' 'SUBROUTINE' IDENT;
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist 'END' 'SUBROUTINE' IDENT;
+codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas
