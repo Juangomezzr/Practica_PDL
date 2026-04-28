@@ -1,4 +1,4 @@
-public class SentenciaAsignacion extends Sentencia{
+public class SentenciaAsignacion{
     String ident;
     String tipo;
     String exp;

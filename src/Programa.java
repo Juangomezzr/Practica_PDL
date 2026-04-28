@@ -5,9 +5,11 @@ public class Programa {
     ArrayList<SentenciaAsignacion> Constlist = new ArrayList<>();
     ArrayList<Subprograma> SubProgList = new ArrayList<>();
     Subprograma main  =  new Subprograma();
-    public void traducir(){
-
+    public Programa(){
         main.identificador = "main";
+        main.returnType = "INT";
+    }
+    public void traducir(){
 
         System.out.println("Program " + ident + ";");
 
@@ -16,8 +18,15 @@ public class Programa {
             Constlist.get(i).traducirConst();
         }
 
-        main.traducir();
+        // Print main
+        System.out.print(main.identificador);
+        System.out.print("(");
+        for (int i = 0; i < main.parametros.size(); i++){
+            SentenciaAsignacion p = main.parametros.get(i);
+            System.out.print(p.ident + " ");
 
+        }
+        System.out.println(");");
         for(int i = 0; i < SubProgList.size(); i++) {
             SubProgList.get(i).traducir();
 
