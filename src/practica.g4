@@ -4,8 +4,6 @@ grammar practica;
 private Sentencia sentencia;
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
-
-
 }
 
 

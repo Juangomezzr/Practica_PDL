@@ -18,18 +18,27 @@ public class Programa {
             Constlist.get(i).traducirConst();
         }
 
-        // Print main
-        System.out.print(main.identificador);
-        System.out.print("(");
-        for (int i = 0; i < main.parametros.size(); i++){
-            SentenciaAsignacion p = main.parametros.get(i);
-            System.out.print(p.ident + " ");
-
-        }
-        System.out.println(");");
+        // Print cabeceras
+        System.out.print("\n");
         for(int i = 0; i < SubProgList.size(); i++) {
-            SubProgList.get(i).traducir();
+            SubProgList.get(i).traducirCabecera();
+        }
 
+        // Print main
+        System.out.print("\nvoid ");
+        System.out.print(main.identificador);
+        System.out.print(" ( void ) ");
+        System.out.println("{");
+
+        // Definicion de programa
+
+
+        System.out.println("\n}");
+
+        // Print funcion
+        System.out.print("\n");
+        for(int i = 0; i < SubProgList.size(); i++) {
+            SubProgList.get(i).traducirFuncion();
         }
     }
 }
