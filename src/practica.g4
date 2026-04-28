@@ -1,5 +1,5 @@
 grammar practica;
-
+//hola
 @parser::members{
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
