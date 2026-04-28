@@ -4,7 +4,7 @@ grammar practica;
 private Sentencia sentencia;
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
-
+private ArrayList<Sentencia> sentList = new ArrayList();
 
 }
 
@@ -55,7 +55,7 @@ dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
-sentlist: sent sentlist_P;
+sentlist: sent  sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones
@@ -92,7 +92,7 @@ dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ','
 
 
 //Zona de sentencias de programas
-sent : IDENT '=' exp ';' | proc_call ';'
+sent : IDENT '=' exp ';' {sentList.add(new SentExp($IDENT.text, $exp.value))} | proc_call ';'
        | 'IF' '(' expcond ')' sent
        | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
        | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
@@ -100,7 +100,7 @@ sent : IDENT '=' exp ';' | proc_call ';'
        | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
        | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
 
-exp: factor exp_P;
+exp returns[String value] : factor exp_P; //seguir con exp para convertirlo todo en un string
 exp_P: op factor exp_P| ; 
 op : '+' | '-' | '*' | '/';
 factor : simpvalue | '(' exp ')' | IDENT factor_P;

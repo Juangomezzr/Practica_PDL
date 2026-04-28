@@ -1,7 +1,6 @@
-public abstract class Sentencia {
+public class SentCall {
     String ident;
     public void traducir(){
 
     }
 }
-
