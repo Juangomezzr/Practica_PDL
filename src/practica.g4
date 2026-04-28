@@ -1,9 +1,10 @@
 grammar practica;
 
 @parser::members{
-private Sentencia sentencia;
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
+private ArrayList<Sentencia> sentlist = new ArrayList();
+
 }
 
 
@@ -45,8 +46,9 @@ prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     dcllist
     cabecera
     sentlist
+
     'END' 'PROGRAM' IDENT
-    subproglist
+    subproglist[0]
     {program.traducir();};
 
 dcllist: | dcl dcllist; // Recursividad solventada
@@ -70,14 +72,14 @@ simpvalue returns[String value]:
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = " \" " + $STRING_CONSTANT.text +"\"";};
 defvar[String t]: '::' varlist[$t]  ';';
-tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength ;
+tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength ;
 charlength: | '(' NUM_INT_CONST ')';
 varlist[String t]: IDENT  init {program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));}  varlist_P ;
 varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
 //Segunda zona declaraciones
-decproc:  'SUBROUTINE'{subprog.returnType = "VOID";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
+decproc:  'SUBROUTINE'{subprog.returnType = "void";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
 formal_paramlist: | '(' nomparamlist ')';
 
 nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text)); } nomparamlist_P;
@@ -108,8 +110,8 @@ proc_call : 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 
 //Zona de implemetenacion de funciones
-subproglist:  codproc subproglist | codfun subproglist | ; // vhsuivwhjui
-codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist 'END' 'SUBROUTINE' IDENT;
+subproglist[int i]:  codproc[i] subproglist[i+1] | codfun subproglist[i+1] | ;
+codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentlist;}  'END' 'SUBROUTINE' IDENT;
 codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
 
 
