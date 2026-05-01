@@ -9,7 +9,7 @@ public class SentExp extends Sentencia{
         this.exp = exp;
     }
     public void traducir(){
-        System.out.println(ident + "=" + exp);
+        System.out.println(ident + " = " + exp + ";");
     }
 
     public String getIdent() {

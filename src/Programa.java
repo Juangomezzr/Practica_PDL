@@ -27,6 +27,12 @@ public class Programa {
 
         }
         System.out.println(");");
+
+        for (Sentencia sentencia : main.sentlist) {
+            sentencia.traducir();
+        }
+
+
         for(int i = 0; i < SubProgList.size(); i++) {
             SubProgList.get(i).traducir();
 
