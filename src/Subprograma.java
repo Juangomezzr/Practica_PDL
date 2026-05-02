@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Subprograma {
     String identificador;
@@ -6,7 +7,7 @@ public class Subprograma {
     ArrayList<SentenciaAsignacion> parametros = new ArrayList<>();
     ArrayList<Sentencia> sentlist = new ArrayList<>();
 
-    void traducir(){
+    void traducirCabecera(){
         System.out.print(returnType + " ");
         System.out.print(identificador);
         System.out.print("( ");
@@ -16,5 +17,19 @@ public class Subprograma {
         System.out.println(");");
     }
 
+    void traducirFuncion(){
+        System.out.print(returnType + " ");
+        System.out.print(identificador);
+        System.out.print("( ");
+        for (SentenciaAsignacion s: parametros){
+            s.traduciParam();
+        }
+        System.out.println(") {");
 
+        for (Sentencia s: sentlist){
+            s.traducir();
+        }
+
+        System.out.println("}");
+    }
 }

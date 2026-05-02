@@ -1,10 +1,9 @@
 grammar practica;
 
 @parser::members{
-private Sentencia sentencia;
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
-
+private ArrayList<Sentencia> sentList = new ArrayList();
 
 }
 
@@ -46,16 +45,18 @@ listaetiqetas : ',' simpvalue listaetiqetas | ;
 prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     dcllist
     cabecera
-    sentlist
+    sentlist {program.main.sentlist.addAll(sentList); sentList = new ArrayList();}
     'END' 'PROGRAM' IDENT
-    subproglist
+    subproglist[0]
     {program.traducir();};
 
 dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
-sentlist: sent sentlist_P;
+//ver decssubproog porq al modif obj se modif lista??
+
+sentlist: sent  sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones
@@ -70,16 +71,16 @@ simpvalue returns[String value]:
     |NUM_INT_CONST_H { $value = $NUM_INT_CONST_H.text;}
     |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
-    |STRING_CONSTANT { $value = " \" " + $STRING_CONSTANT.text +"\"";};
+    |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
 defvar[String t]: '::' varlist[$t]  ';';
-tipo: 'INTEGER' | 'REAL' | 'CHARACTER' charlength ;
+tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength ;
 charlength: | '(' NUM_INT_CONST ')';
 varlist[String t]: IDENT  init {program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));}  varlist_P ;
 varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
 //Segunda zona declaraciones
-decproc:  'SUBROUTINE'{subprog.returnType = "VOID";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
+decproc:  'SUBROUTINE'{subprog.returnType = "void";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
 formal_paramlist: | '(' nomparamlist ')';
 
 nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text)); } nomparamlist_P;
@@ -92,7 +93,9 @@ dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ','
 
 
 //Zona de sentencias de programas
-sent : IDENT '=' exp ';' | proc_call ';'
+sent :
+        IDENT '=' exp ';' {sentList.add(new SentExp($IDENT.text, $exp.value));}
+       | proc_call ';'
        | 'IF' '(' expcond ')' sent
        | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
        | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
@@ -100,19 +103,42 @@ sent : IDENT '=' exp ';' | proc_call ';'
        | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
        | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
 
-exp: factor exp_P;
-exp_P: op factor exp_P| ; 
-op : '+' | '-' | '*' | '/';
-factor : simpvalue | '(' exp ')' | IDENT factor_P;
-factor_P : '(' exp explist ')' | ;
-explist : ',' exp explist | ;
-proc_call : 'CALL' IDENT subpparamlist;
-subpparamlist: '(' exp explist ')' | ;
+exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
+
+exp_P returns[String value]:
+     op factor exp_P {$value = $op.value + $factor.value + $exp_P.value;}
+     | {$value = "";} ;
+
+op returns[String value]:
+    '+'{$value = " + ";}
+    | '-' {$value = " - ";}
+    | '*' {$value = " * ";}
+    | '/' {$value = " / ";};
+
+factor returns[String value]:
+    simpvalue {$value = $simpvalue.value;}
+    | '(' exp ')'{$value = "(" + $exp.value + ")";}
+    | IDENT factor_P {$value = $IDENT.text + $factor_P.value;};
+
+factor_P returns[String value] :
+    '(' exp explist ')'{$value = "(" + $exp.value + $explist.value + ")";}
+    |{$value = "" ;} ;
+
+
+explist returns[String value] :
+    ',' exp explist {$value = "," + $exp.value + $explist.value;}
+    |{$value = "";} ;
+
+
+proc_call : 'CALL' IDENT subpparamlist {sentList.add(new SentCall($IDENT.text, $subpparamlist.value));};
+subpparamlist returns[String value]:
+    '(' exp explist ')' {$value = $exp.value + $explist.value;}
+    | {$value = "";};
 
 //Zona de implemetenacion de funciones
-subproglist:  codproc subproglist | codfun subproglist | ; // vhsuivwhjui
-codproc: 'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist 'END' 'SUBROUTINE' IDENT;
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
+codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}   'END' 'SUBROUTINE' IDENT;
+codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist{program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas
@@ -133,7 +159,7 @@ NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
                 | NUM_INT_CONST ('e'|'E') NUM_INT_CONST// Exponencial
                 | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST; // Mixto
 //Comentarios
-COMMENT: '!' ~[\n\r]* ('\n' | '\r');
+COMMENT: '!' ~[\n\r]* ('\n' | '\r') -> skip;
 
 //Identifecadores
 IDENT: [a-zA-Z]+ [a-zA-Z0-9_]*;
