@@ -137,8 +137,8 @@ subpparamlist returns[String value]:
 
 //Zona de implemetenacion de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
-codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentlist;}  'END' 'SUBROUTINE' IDENT;
-codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentlist;} IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}   'END' 'SUBROUTINE' IDENT;
+codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist{program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas

@@ -33,6 +33,11 @@ public class Programa {
         // Definicion de programa
 
 
+        for (Sentencia sentencia : main.sentlist) {
+            sentencia.traducir();
+        }
+
+
         System.out.println("\n}");
 
         // Print funcion

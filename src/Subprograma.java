@@ -26,6 +26,9 @@ public class Subprograma {
         }
         System.out.println(") {");
 
+        for (Sentencia s: sentlist){
+            s.traducir();
+        }
 
         System.out.println("}");
     }
