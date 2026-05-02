@@ -110,9 +110,9 @@ proc_call : 'CALL' IDENT subpparamlist;
 subpparamlist: '(' exp explist ')' | ;
 
 //Zona de implemetenacion de funciones
-subproglist[int i]:  codproc[i] subproglist[i+1] | codfun subproglist[i+1] | ;
+subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
 codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentlist;}  'END' 'SUBROUTINE' IDENT;
-codfun: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentlist;} IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas
