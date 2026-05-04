@@ -39,6 +39,7 @@ public class Programa {
         System.out.print("\n");
         for(int i = 0; i < SubProgList.size(); i++) {
             SubProgList.get(i).traducirFuncion();
+
         }
     }
 }
