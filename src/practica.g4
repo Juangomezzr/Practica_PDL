@@ -56,7 +56,7 @@ cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();}
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 //ver decssubproog porq al modif obj se modif lista??
 
-sentlist: sent  sentlist_P;
+sentlist: sent sentlist_P;
 sentlist_P: sent sentlist_P | ;
 
 //Primera zona declaraciones

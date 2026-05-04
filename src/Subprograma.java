@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 
 public class Subprograma {
     String identificador;
@@ -18,7 +19,7 @@ public class Subprograma {
     }
 
     void traducirFuncion(){
-        System.out.print(returnType + " ");
+        System.out.print("\n" + returnType + " ");
         System.out.print(identificador);
         System.out.print("( ");
         for (SentenciaAsignacion s: parametros){
@@ -26,12 +27,17 @@ public class Subprograma {
         }
         System.out.println(") {");
 
-        for (Sentencia s: sentlist){
+        Iterator<Sentencia> it = sentlist.iterator();
+        while(it.hasNext()){
+            Sentencia s = it.next();
             System.out.print("\t");
-            s.traducir();
-        }
 
-        //FALTAN RETURNS
+            if (!returnType.equals("void") && !it.hasNext()) {
+                System.out.println("return " + s.getExp() + ";");
+            }else {
+                s.traducir();
+            }
+        }
 
         System.out.println("}");
     }
