@@ -1,5 +1,7 @@
 public abstract class Sentencia {
-    String identificador;
+    String ident;
+    public void traducir(){
 
+    }
 }
 
