@@ -30,10 +30,13 @@ public class Programa {
         System.out.print(" ( void ) ");
         System.out.println("{");
 
-        // Definicion de programa
+        //Cuerpo
+        for (Sentencia s: main.sentlist){
+            System.out.print("\t");
+            s.traducir();
+        }
 
-
-        System.out.println("\n}");
+        System.out.println("}");
 
         // Print funcion
         System.out.print("\n");

@@ -26,7 +26,12 @@ public class Subprograma {
         }
         System.out.println(") {");
 
+        for (Sentencia s: sentlist){
+            System.out.print("\t");
+            s.traducir();
+        }
 
+        //FALTAN RETURNS
 
         System.out.println("}");
     }
