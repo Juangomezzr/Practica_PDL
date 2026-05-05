@@ -7,7 +7,7 @@ public class Programa {
     Subprograma main  =  new Subprograma();
     public Programa(){
         main.identificador = "main";
-        main.returnType = "INT";
+        main.returnType = "void";
     }
     public void traducir(){
 

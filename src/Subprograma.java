@@ -7,6 +7,7 @@ public class Subprograma {
     String returnType;
     ArrayList<SentenciaAsignacion> parametros = new ArrayList<>();
     ArrayList<Sentencia> sentlist = new ArrayList<>();
+    String returnExp;
 
     void traducirCabecera(){
         System.out.print(returnType + " ");
@@ -27,16 +28,13 @@ public class Subprograma {
         }
         System.out.println(") {");
 
-        Iterator<Sentencia> it = sentlist.iterator();
-        while(it.hasNext()){
-            Sentencia s = it.next();
-            System.out.print("\t");
 
-            if (!returnType.equals("void") && !it.hasNext()) {
-                System.out.println("return " + s.getExp() + ";");
-            }else {
-                s.traducir();
-            }
+        for(Sentencia s: sentlist){
+            System.out.print("\t");
+            s.traducir();
+        }
+        if (!returnType.equals("void")) {
+            System.out.println("\t"+"return "  +returnExp+ ";");
         }
 
         System.out.println("}");
