@@ -6,7 +6,7 @@ public class SentenciaAsignacion{
         System.out.println(ident + " " + exp );
     }
     public void traduciParam(){
-        System.out.print(tipo + " " + ident + " " );
+        System.out.print(tipo + " " + ident );
     }
     public SentenciaAsignacion(String ident){
         this.ident = ident;

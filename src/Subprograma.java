@@ -12,20 +12,34 @@ public class Subprograma {
     void traducirCabecera(){
         System.out.print(returnType + " ");
         System.out.print(identificador);
-        System.out.print("( ");
-        for (SentenciaAsignacion s: parametros){
+        System.out.print("(");
+
+        Iterator<SentenciaAsignacion> it = parametros.iterator();
+        while (it.hasNext()) {
+            SentenciaAsignacion s = it.next();
             s.traduciParam();
+            if (it.hasNext()) {
+                System.out.print(", ");
+            }
         }
+
         System.out.println(");");
     }
 
     void traducirFuncion(){
         System.out.print("\n" + returnType + " ");
         System.out.print(identificador);
-        System.out.print("( ");
-        for (SentenciaAsignacion s: parametros){
+        System.out.print("(");
+
+        Iterator<SentenciaAsignacion> it = parametros.iterator();
+        while (it.hasNext()) {
+            SentenciaAsignacion s = it.next();
             s.traduciParam();
+            if (it.hasNext()) {
+                System.out.print(", ");
+            }
         }
+
         System.out.println(") {");
 
 
