@@ -37,7 +37,7 @@ public class Main {
             gramática
             */
 
-            anasint.axioma();
+            anasint.prg();
 
 
         } catch (org.antlr.v4.runtime.RecognitionException e) {

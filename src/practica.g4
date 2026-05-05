@@ -8,8 +8,14 @@ private ArrayList<Sentencia> sentList = new ArrayList();
 }
 
 
-axioma: (NUM_REAL_CONST|NUM_INT_CONST|IDENT|STRING_CONSTANT|COMMENT|prg|NUM_INT_CONST_B | NUM_INT_CONST_O | NUM_INT_CONST_H)* EOF;
-
+//axioma
+prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
+    dcllist
+    cabecera
+    sentlist {program.main.sentlist.addAll(sentList); sentList = new ArrayList();}
+    'END' 'PROGRAM' IDENT
+    subproglist[0]
+    {program.traducir();};
 /*
 X -> Xa | b
 
@@ -42,13 +48,7 @@ etiquetas : simpvalue listaetiqetas
 listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 //Partes programa
-prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
-    dcllist
-    cabecera
-    sentlist {program.main.sentlist.addAll(sentList); sentList = new ArrayList();}
-    'END' 'PROGRAM' IDENT
-    subproglist[0]
-    {program.traducir();};
+
 
 dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
