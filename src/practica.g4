@@ -139,7 +139,7 @@ subpparamlist returns[String value]:
 //Zona de implemetenacion de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
 codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist sentlist {program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}   'END' 'SUBROUTINE' IDENT;
-codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist{program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}  IDENT '=' exp ';' 'END' 'FUNCTION' IDENT;
+codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist sentlist{program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}  IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;}';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas
@@ -149,10 +149,6 @@ NUM_INT_CONST: '-'? [0-9]+ ;
 NUM_INT_CONST_B: 'b´'[01]+'´';
 NUM_INT_CONST_O: 'o´'[0-7]+'´';
 NUM_INT_CONST_H: 'z´'[0-9A-F]+'´';
-
-
-
-
 
 
 //Numeros Reales
