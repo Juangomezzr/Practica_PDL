@@ -142,15 +142,20 @@
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
 
-- DIR( etiquetas : simpvalue listaetiqetas ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT}
-- DIR( etiquetas : simpvalue ':' simpvalue ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
-- DIR( etiquetas : ':' simpvalue ) = {':'}
-- DIR( etiquetas : simpvalue ':') = CAB(simpvalue ) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
+- DIR( etiquetas: simpvalue etiquetas_P ) = CAB(simpvalue) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
+- DIR( etiquetas : ':' simpvalue ) = { ':' }
+
+-DIR( etiquetas_P: listaetiqetas ) = CAB( listaetiquetas ) = { ',' }
+-DIR( etiquetas_P: ':' etiquetas_PP ) = { ':' }
+-DIR( etiquetas_P: lambda ) = SIG( etiquetas_P ) = { ')' }
+
+-DIR( etiquetas_PP: simpvalue ) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
+-DIR( etiquetas_PP: lambda ) = SIG( etiquetas_PP ) = { ')' }
 
 
 - DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
 - DIR( casos : 'CASE' 'DEFAULT' sentlist ) = {'CASE'}
-- DIR( casos : lambda) = SIG(casos) = {'END','CASE'}
+- DIR( casos : lambda ) = SIG(casos) = {'END','CASE'}
 
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
-- DIR( listaetiqetas : lambda) = {'+','-','*','/', ',', ';'} -falta esta
+- DIR( listaetiqetas : lambda) = {')'}
