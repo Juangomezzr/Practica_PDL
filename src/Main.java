@@ -22,8 +22,9 @@ public class Main {
             // Crear el objeto correspondiente al analizador sintáctico
             practicaParser anasint = new practicaParser(tokens);
 
-
-
+            //Cambiamos el errorListener al creado por nosotros
+            anasint.removeErrorListeners();
+            anasint.addErrorListener(new ErrorListenerES());
 
             /*
             Si se quiere pasar al analizador algún objeto externo con el que trabajar,
@@ -39,10 +40,6 @@ public class Main {
 
             anasint.prg();
 
-
-        } catch (org.antlr.v4.runtime.RecognitionException e) {
-            //Fallo al reconocer la entrada
-            System.err.println("REC " + e.getMessage());
         } catch (IOException e) {
             //Fallo de entrada/salida
             System.err.println("IO " + e.getMessage());
