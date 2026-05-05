@@ -42,7 +42,6 @@ FUNCTION Sumar(a, b)
     INTEGER, INTENT(IN) b;
 
     INTEGER :: suma;
-     c = fun1(d , 1.0);
     suma = a + b;
     Sumar = suma;
 END FUNCTION Sumar
