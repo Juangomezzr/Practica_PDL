@@ -7,9 +7,6 @@ private ArrayList<Sentencia> sentList = new ArrayList();
 
 }
 
-
-
-//axioma
 prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     dcllist
     cabecera
@@ -27,7 +24,7 @@ x' -> aX' | ;
 //Opcional Notable
 
 expcond : factorcond expcond_P;
-expcond_P : oplog expcond expcond_P | ;
+expcond_P : oplog factorcond expcond_P | ;
 oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
 factorcond : exp opcomp exp
     | '(' expcond ')' | '.NOT.' factorcond
@@ -37,15 +34,18 @@ opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
 
 doval : NUM_INT_CONST | IDENT;
 
-
 casos : 'CASE' '(' etiquetas ')' sentlist casos
     | 'CASE' 'DEFAULT' sentlist
     | ;
 
-etiquetas : simpvalue listaetiqetas
-    | simpvalue ':' simpvalue
-    | ':' simpvalue
-    | simpvalue ':';
+etiquetas: simpvalue etiquetas_P
+    | ':' simpvalue;
+
+etiquetas_P: listaetiqetas
+    | ':' etiquetas_PP|;
+
+etiquetas_PP
+    : simpvalue|;
 
 listaetiqetas : ',' simpvalue listaetiqetas | ;
 
@@ -56,7 +56,6 @@ dcllist: | dcl dcllist; // Recursividad solventada
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
-//ver decssubproog porq al modif obj se modif lista??
 
 sentlist: sent sentlist_P;
 sentlist_P: sent sentlist_P | ;

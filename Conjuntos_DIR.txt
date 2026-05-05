@@ -111,8 +111,8 @@
     { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT, '(', IDENT, '.NOT.', '.TRUE.', '.FALSE.' }
 - DIR( expcond : lambda ) = SIG(expcond) = CAB'(expcond_P) U SIG(expcond_P) U {')'} = { '.OR.', '.AND.', '.EQV.', '.NEQV.', ')' }
 
--DIR( expcond_P : oplog expcond expcond_P ) = { '.OR.', '.AND.', '.EQV.', '.NEQV.' }
--DIR( expcond_P : lambda ) = SIG(expcond_P) = SIG(expcond) = { '.OR.', '.AND.', '.EQV.', '.NEQV.', ')' } -> COINCIDEN
+-DIR( expcond_P : oplog factorcond expcond_P ) = { '.OR.', '.AND.', '.EQV.', '.NEQV.' }
+-DIR( expcond_P : lambda ) = SIG(expcond_P) = SIG(expcond) = { ')' }
 
 -DIR( oplog : '.OR.' ) = { '.OR.' }
 -DIR( oplog : '.AND.' ) = { '.AND.' }
@@ -120,7 +120,7 @@
 -DIR( oplog : '.NEQV.' ) = { '.NEQV.' }
 
 -DIR( factorcond : exp opcomp exp ) = CAB(exp) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT ,'(', IDENT }
--DIR( factorcond : '(' expcond ')' ) = { '(' } ->COINCIDEN
+-DIR( factorcond : '(' expcond ')' ) = { '(' }
 -DIR( factorcond : '.NOT.' factorcond ) = { '.NOT.' }
 -DIR( factorcond : '.TRUE.' ) = { '.TRUE.' }
 -DIR( factorcond : '.FALSE.' ) = { '.FALSE.' }
@@ -142,15 +142,20 @@
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
 
-- DIR( etiquetas : simpvalue listaetiqetas ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT}
-- DIR( etiquetas : simpvalue ':' simpvalue ) = CAB(simpvalue) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
-- DIR( etiquetas : ':' simpvalue ) = {':'}
-- DIR( etiquetas : simpvalue ':') = CAB(simpvalue ) = {NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT} 
+- DIR( etiquetas: simpvalue etiquetas_P ) = CAB(simpvalue) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
+- DIR( etiquetas : ':' simpvalue ) = { ':' }
+
+-DIR( etiquetas_P: listaetiqetas ) = CAB( listaetiquetas ) = { ',' }
+-DIR( etiquetas_P: ':' etiquetas_PP ) = { ':' }
+-DIR( etiquetas_P: lambda ) = SIG( etiquetas_P ) = { ')' }
+
+-DIR( etiquetas_PP: simpvalue ) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
+-DIR( etiquetas_PP: lambda ) = SIG( etiquetas_PP ) = { ')' }
 
 
 - DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
 - DIR( casos : 'CASE' 'DEFAULT' sentlist ) = {'CASE'}
-- DIR( casos : lambda) = SIG(casos) = {'END','CASE'}
+- DIR( casos : lambda ) = SIG(casos) = {'END','CASE'}
 
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
-- DIR( listaetiqetas : lambda) = {'+','-','*','/', ',', ';'}
+- DIR( listaetiqetas : lambda) = {')'}
