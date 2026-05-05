@@ -36,6 +36,7 @@ opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
 
 doval : NUM_INT_CONST | IDENT;
 
+
 casos : 'CASE' '(' etiquetas ')' sentlist casos
     | 'CASE' 'DEFAULT' sentlist
     | ;
