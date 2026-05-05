@@ -8,6 +8,7 @@ private ArrayList<Sentencia> sentList = new ArrayList();
 }
 
 
+
 //axioma
 prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     dcllist
