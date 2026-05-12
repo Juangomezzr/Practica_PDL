@@ -76,7 +76,7 @@ simpvalue returns[String value]:
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
 tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength ;
 charlength: | '(' NUM_INT_CONST ')';
-varlist[int is_main,String t]: IDENT  init {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));System.out.println("  "+$IDENT.text+" ");}}  varlist_P ;
+varlist[int is_main,String t]: IDENT  init {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));}}  varlist_P ;
 varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
