@@ -7,36 +7,48 @@ public class Subprograma {
     String returnType;
     ArrayList<SentenciaAsignacion> parametros = new ArrayList<>();
     ArrayList<Sentencia> sentlist = new ArrayList<>();
+    String returnExp;
 
     void traducirCabecera(){
         System.out.print(returnType + " ");
         System.out.print(identificador);
-        System.out.print("( ");
-        for (SentenciaAsignacion s: parametros){
+        System.out.print("(");
+
+        Iterator<SentenciaAsignacion> it = parametros.iterator();
+        while (it.hasNext()) {
+            SentenciaAsignacion s = it.next();
             s.traduciParam();
+            if (it.hasNext()) {
+                System.out.print(", ");
+            }
         }
+
         System.out.println(");");
     }
 
     void traducirFuncion(){
         System.out.print("\n" + returnType + " ");
         System.out.print(identificador);
-        System.out.print("( ");
-        for (SentenciaAsignacion s: parametros){
+        System.out.print("(");
+
+        Iterator<SentenciaAsignacion> it = parametros.iterator();
+        while (it.hasNext()) {
+            SentenciaAsignacion s = it.next();
             s.traduciParam();
+            if (it.hasNext()) {
+                System.out.print(", ");
+            }
         }
+
         System.out.println(") {");
 
-        Iterator<Sentencia> it = sentlist.iterator();
-        while(it.hasNext()){
-            Sentencia s = it.next();
-            System.out.print("\t");
 
-            if (!returnType.equals("void") && !it.hasNext()) {
-                System.out.println("return " + s.getExp() + ";");
-            }else {
-                s.traducir();
-            }
+        for(Sentencia s: sentlist){
+            System.out.print("\t");
+            s.traducir();
+        }
+        if (!returnType.equals("void")) {
+            System.out.println("\t"+"return "  +returnExp+ ";");
         }
 
         System.out.println("}");

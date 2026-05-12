@@ -43,6 +43,6 @@ FUNCTION Sumar(a, b)
     INTEGER, INTENT(IN) b;
 
     INTEGER :: suma;
-    suma = a + b;
+    suma = a +b;
     Sumar = suma;
 END FUNCTION Sumar
