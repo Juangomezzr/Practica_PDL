@@ -74,8 +74,8 @@ simpvalue returns[String value]:
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
-tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength {$text = $text + "[" + charlength.tex + "]"} ;
-charlength: | '(' NUM_INT_CONST ')';
+tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength {$text += $charlength.value; } ;
+charlength returns[String value]: {$value = "";} | '(' NUM_INT_CONST ')' {$value = "["+ $NUM_INT_CONST.text+"]";};
 varlist[int is_main,String t]: IDENT  init {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text,$t,$init.value));}}  varlist_P ;
 varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
