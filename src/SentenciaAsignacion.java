@@ -8,6 +8,13 @@ public class SentenciaAsignacion{
     public void traduciParam(){
         System.out.print(tipo + " " + ident + " " );
     }
+    public void traducir(){
+        if(exp != null){
+            System.out.print(tipo + " " + ident + " = " + exp );
+        }else{
+            traduciParam();
+        }
+    }
     public SentenciaAsignacion(String ident){
         this.ident = ident;
     }

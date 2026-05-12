@@ -30,6 +30,13 @@ public class Programa {
         System.out.print(" ( void ) ");
         System.out.println("{");
 
+        //Declaraciones variables
+        for(SentenciaAsignacion s : main.parametros){
+            System.out.print("\t");
+            s.traducir();
+            System.out.println(";");
+        }
+
         //Cuerpo
         for (Sentencia s: main.sentlist){
             System.out.print("\t");

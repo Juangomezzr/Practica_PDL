@@ -10,6 +10,7 @@ INTEGER :: contador = 0, acumulador;
 REAL :: promedio, total = 0.0;
 CHARACTER(10) :: mensaje1 = 'Hola', mensaje2 = 'Mundo';
 
+
     INTERFACE
 
         SUBROUTINE ImprimirMensaje(texto)
