@@ -69,9 +69,6 @@
 - DIR( dec_f_paramlist : lambda ) = SIG( dec_f_paramlist ) = { 'END', 'INTEGER', 'REAL', 'CHARACTER', IDENT, 'CALL' }
 - DIR( dec_f_paramlist : tipo ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist ) = CAB( tipo ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 
-- DIR( SENT : IDENT '=' exp ';'  ) = { IDENT }
-- DIR( SENT : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
-
 - DIR( exp : factor exp_p) = CAB( factor ) = { NUM_INT_CONST , NUM_REAL_CONST , STRING_CONSTANT ,'(', IDENT }
 
 - DIR( exp_p : op exp exp_p) = CAB(op) = { '+', '-', '*', '/' }
@@ -132,6 +129,9 @@
 - DIR( opcomp : '==' ) = { '==' }
 - DIR( opcomp : '/=' ) = { '/=' }
 
+
+- DIR( sent : IDENT '=' exp ';'  ) = { IDENT }
+- DIR( sent : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
 - DIR( sent : 'IF' '(' expcond ')' sent ) = { 'IF' }
 - DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF' ) = { 'IF' }
 - DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF' ) = { 'IF' }

@@ -4,6 +4,8 @@ grammar practica;
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
 private ArrayList<Sentencia> sentList = new ArrayList();
+private SentIf sentIf;
+
 
 }
 
@@ -14,45 +16,9 @@ prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     'END' 'PROGRAM' IDENT
     subproglist[0]
     {program.traducir();};
-/*
-X -> Xa | b
-
-x -> bX'
-x' -> aX' | ;
-*/
-
-//Opcional Notable
-
-expcond : factorcond expcond_P;
-expcond_P : oplog factorcond expcond_P | ;
-oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
-factorcond : exp opcomp exp
-    | '(' expcond ')' | '.NOT.' factorcond
-    | '.TRUE.' | '.FALSE.';
-
-opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
-
-doval : NUM_INT_CONST | IDENT;
-
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
-    | ;
-
-etiquetas: simpvalue etiquetas_P
-    | ':' simpvalue;
-
-etiquetas_P: listaetiqetas
-    | ':' etiquetas_PP|;
-
-etiquetas_PP
-    : simpvalue|;
-
-listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 //Partes programa
-
-
-dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main]; // Recursividad solventada
+dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main];
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
@@ -97,12 +63,65 @@ dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ','
 sent :
         IDENT '=' exp ';' {sentList.add(new SentExp($IDENT.text, $exp.value));}
        | proc_call ';'
-       | 'IF' '(' expcond ')' sent
-       | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
-       | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
+       | 'IF' '(' expcond ')' {sentIf = new SentIf($expcond.value);} if_P {sentList.add(sentIf);}
        | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
        | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
        | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+
+if_P:
+        sent {sentIf.sentencias.addAll(sentList); sentList = new ArrayList();}
+        | 'THEN' sentlist {sentIf.sentencias.addAll(sentList); sentList = new ArrayList();} if_PP;
+
+if_PP:
+    'ENDIF' {sentList = new ArrayList();}
+    | 'ELSE' {sentIf.setElse(true);} sentlist {sentIf.sentenciasElse.addAll(sentList); sentList = new ArrayList();} 'ENDIF';
+
+
+expcond returns[String value]:
+    factorcond expcond_P {$value = $factorcond.value + $expcond_P.value;};
+
+expcond_P returns[String value]:
+    oplog factorcond expcond_P {$value = $oplog.value + $factorcond.value + $expcond_P.value;}
+    | {$value = "";};
+
+oplog returns[String value] :
+    '.OR.' {$value = " || ";}
+    | '.AND.' {$value = " && ";}
+    | '.EQV.' {$value = " !^ " ;}
+    | '.NEQV.' {$value = " ^ ";};
+
+factorcond returns[String value] :
+    id1=exp opcomp id2=exp {$value = $id1.value + $opcomp.value + $id2.value;}
+    | '(' expcond ')' {$value = "(" + $expcond.value + ")";}
+    | '.NOT.' factorcond {$value= "!" + $factorcond.value;}
+    | '.TRUE.' {$value = "1";}
+    |'.FALSE.' {$value= "0";};
+
+opcomp returns[String value]: '<' {$value = " < ";}
+    | '>' {$value = " > ";}
+    | '<=' {$value = " <= ";}
+    | '>=' {$value = " >= ";}
+    | '==' {$value = " == ";}
+    | '/=' {$value = " != ";};
+
+doval returns[String value] :
+      NUM_INT_CONST {$value = $NUM_INT_CONST.text;}
+      | IDENT {$value = $IDENT.text;};
+
+casos : 'CASE' '(' etiquetas ')' sentlist casos
+    | 'CASE' 'DEFAULT' sentlist
+    | ;
+
+etiquetas: simpvalue etiquetas_P
+    | ':' simpvalue;
+
+etiquetas_P: listaetiqetas
+    | ':' etiquetas_PP|;
+
+etiquetas_PP
+    : simpvalue|;
+
+listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
 
