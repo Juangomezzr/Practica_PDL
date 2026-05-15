@@ -35,6 +35,7 @@ simpvalue returns[String value]:
     |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
+
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
 tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength {$text += $charlength.value; } ;
 charlength returns[String value]: {$value = "";} | '(' NUM_INT_CONST ')' {$value = "["+ $NUM_INT_CONST.text+"]";};
