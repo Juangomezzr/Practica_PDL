@@ -13,10 +13,10 @@
 - DIR( decsubprog : decproc decsubprog ) = { 'SUBROUTINE' }
 - DIR( decsubprog : decfun decsubprog ) = { 'FUNCTION' }
 
-- DIR( sentlist : sent sentlist_P) = { IDENT, 'CALL' }
+- DIR( sentlist : sent sentlist_P) = { 'CALL ', ' IDENT ', ' IF ', ' DO ', ' SELECT '}
 
-- DIR( sentlist_P : sent sentlist_P ) = { IDENT, 'CALL' } //coincide IDENT pero no lo podemos moficar porque el problema esta en codfun y mofificarla se sale de los conteniddos vistos en clase entonces seria LL(k)
-- DIR( sentlist_P : lambda ) = { 'END', IDENT }
+- DIR( sentlist_P : sent sentlist_P ) = { 'CALL ', ' IDENT ', ' IF ', ' DO ', ' SELECT '}
+- DIR( sentlist_P : lambda ) = { 'END', 'IDENT' }
 
 - DIR( dcl : tipo def_P ) = { 'INTEGER', 'REAL', 'CHARACTER' }
 
@@ -132,12 +132,16 @@
 
 - DIR( sent : IDENT '=' exp ';'  ) = { IDENT }
 - DIR( sent : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
-- DIR( sent : 'IF' '(' expcond ')' sent ) = { 'IF' }
-- DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF' ) = { 'IF' }
-- DIR( sent : 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF' ) = { 'IF' }
+- DIR( sent : 'IF' '(' expcond ')' if_P) = { 'IF' }
 - DIR( sent : 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO' ) = { 'DO' }
 - DIR( sent : 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO' ) = { 'DO' }
 - DIR( sent : 'SELECT' 'CASE' '(' expcond ')' casos 'END' 'SELECT' ) = { 'SELECT' }
+
+- DIR( if_P : sent) = CAB(sent) = { 'CALL ', ' IDENT ', ' IF ', ' DO ', ' SELECT '}
+- DIR( if_P : 'THEN' sentlist if_PP) = { ' THEN ' }
+
+-DIR( if_PP: 'ENDIF' ) = { 'ENDIF' }
+-DIR( if_PP: 'ELSE' sentlist 'ENDIF' ) = { 'ELSE' }
 
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
