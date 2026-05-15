@@ -1,7 +1,7 @@
 import java.util.Objects;
 
 public class SentExp extends Sentencia{
-    private String ident;
+    public String ident;
     private String exp;
 
     public SentExp(String ident, String exp){

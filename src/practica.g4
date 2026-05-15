@@ -87,8 +87,8 @@ formal_paramlist: | '(' nomparamlist ')';
 nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text)); } nomparamlist_P;
 nomparamlist_P: | ',' nomparamlist;
 
-dec_s_paramlist[int i]: | tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist[$i +1];
-tipoparam : 'IN' | 'OUT' | 'INOUT';
+dec_s_paramlist[int i]: | tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' IDENT {subprog.parametros.get(i).ident = $tipoparam.value + $IDENT.text ;} ';' dec_s_paramlist[$i +1];
+tipoparam returns[String value] : 'IN'{$value = "";} | 'OUT'{$value = "*";} | 'INOUT'{$value = "*";};
 decfun : 'FUNCTION'  IDENT {subprog.identificador = $IDENT.text;} '(' nomparamlist ')' tipo {subprog.returnType = $tipo.text;} '::' IDENT';' dec_f_paramlist[0] 'END' 'FUNCTION' IDENT;
 dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist[$i + 1] | ;
 
@@ -102,7 +102,7 @@ sent :
        | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
        | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
        | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
-       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT';
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
 
@@ -131,7 +131,13 @@ explist returns[String value] :
     |{$value = "";} ;
 
 
-proc_call : 'CALL' IDENT subpparamlist {sentList.add(new SentCall($IDENT.text, $subpparamlist.value));};
+proc_call : 'CALL' IDENT subpparamlist {
+                                           // Llamamos a nuestro método en Java pasándole el nombre y el string de parámetros
+                                           String paramsListosParaC = program.procesarParametrosLlamada($IDENT.text, $subpparamlist.value);
+
+                                           // Lo añadimos a la lista con los '&' ya puestos y entre paréntesis
+                                           sentList.add(new SentCall($IDENT.text, paramsListosParaC));
+                                       };
 subpparamlist returns[String value]:
     '(' exp explist ')' {$value = $exp.value + $explist.value;}
     | {$value = "";};

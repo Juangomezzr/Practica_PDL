@@ -1,6 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Subprograma {
     String identificador;
@@ -31,6 +33,7 @@ public class Subprograma {
         System.out.print(identificador);
         System.out.print("(");
 
+
         Iterator<SentenciaAsignacion> it = parametros.iterator();
         while (it.hasNext()) {
             SentenciaAsignacion s = it.next();
@@ -43,9 +46,23 @@ public class Subprograma {
         System.out.println(") {");
 
 
+        Set<String> punteros = parametros.stream()
+                .filter(p -> p.ident.contains("*")) // 1. Filtramos: solo pasan los que tienen "*"
+                .map(p -> p.ident)                  // 2. Extraemos: nos quedamos solo con el string 'ident'
+                .collect(Collectors.toSet());
+
+
         for(Sentencia s: sentlist){
             System.out.print("\t");
-            s.traducir();
+
+            if(s instanceof SentExp) {
+
+                if(punteros.contains("*"+s.getIdent())){
+                    System.out.print("*");
+                }
+            }
+                s.traducir();
+
         }
         if (!returnType.equals("void")) {
             System.out.println("\t"+"return "  +returnExp+ ";");
