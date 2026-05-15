@@ -3,62 +3,24 @@ grammar practica;
 @parser::members{
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
-private ArrayList<Sentencia> sentList = new ArrayList();
-
 }
 
 prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
     dcllist[1]
     cabecera
-    sentlist {program.main.sentlist.addAll(sentList); sentList = new ArrayList();}
+    sentlist {program.main.sentlist.addAll($sentlist.list);}
     'END' 'PROGRAM' IDENT
     subproglist[0]
     {program.traducir();};
-/*
-X -> Xa | b
-
-x -> bX'
-x' -> aX' | ;
-*/
-
-//Opcional Notable
-
-expcond : factorcond expcond_P;
-expcond_P : oplog factorcond expcond_P | ;
-oplog : '.OR.' | '.AND.' | '.EQV.' | '.NEQV.';
-factorcond : exp opcomp exp
-    | '(' expcond ')' | '.NOT.' factorcond
-    | '.TRUE.' | '.FALSE.';
-
-opcomp : '<' | '>' | '<=' | '>=' | '==' | '/=';
-
-doval : NUM_INT_CONST | IDENT;
-
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
-    | ;
-
-etiquetas: simpvalue etiquetas_P
-    | ':' simpvalue;
-
-etiquetas_P: listaetiqetas
-    | ':' etiquetas_PP|;
-
-etiquetas_PP
-    : simpvalue|;
-
-listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 //Partes programa
-
-
-dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main]; // Recursividad solventada
+dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main];
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
 
-sentlist: sent sentlist_P;
-sentlist_P: sent sentlist_P | ;
+sentlist returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$list.add($sent.value);} sentlist_P {$list.addAll($sentlist_P.list);};
+sentlist_P returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$list.add($sent.value);} tail=sentlist_P {$list.addAll($tail.list);}| {$list = new ArrayList();};
 
 //Primera zona declaraciones
 
@@ -94,15 +56,68 @@ dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ','
 
 
 //Zona de sentencias de programas
-sent :
-        IDENT '=' exp ';' {sentList.add(new SentExp($IDENT.text, $exp.value));}
-       | proc_call ';'
-       | 'IF' '(' expcond ')' sent
-       | 'IF' '(' expcond ')' 'THEN' sentlist 'ENDIF'
-       | 'IF' '(' expcond ')' 'THEN' sentlist 'ELSE' sentlist 'ENDIF'
+sent returns[Sentencia value]:
+        IDENT '=' exp ';' {$value = new SentExp($IDENT.text, $exp.value);}
+       | proc_call ';' {$value = $proc_call.value;}
+       | 'IF' '(' expcond ')' if_P[new SentIf($expcond.value)] {$value = $if_P.value;}
        | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
        | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
        | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+
+if_P[SentIf heredada] returns[SentIf value]:
+        sent {$heredada.sentencias.add($sent.value); $value = $heredada;}
+        | 'THEN' sentlist {$heredada.sentencias.addAll($sentlist.list);} if_PP[$heredada] {$value = $if_PP.value;};
+
+if_PP[SentIf heredada] returns[SentIf value]:
+    'ENDIF' {$value = $heredada;}
+    | 'ELSE' {$heredada.setElse(true);} sentlist {$heredada.sentenciasElse.addAll($sentlist.list);} 'ENDIF' {$value = $heredada;};
+
+
+expcond returns[String value]:
+    factorcond expcond_P {$value = $factorcond.value + $expcond_P.value;};
+
+expcond_P returns[String value]:
+    oplog factorcond expcond_P {$value = $oplog.value + $factorcond.value + $expcond_P.value;}
+    | {$value = "";};
+
+oplog returns[String value] :
+    '.OR.' {$value = " || ";}
+    | '.AND.' {$value = " && ";}
+    | '.EQV.' {$value = " !^ " ;}
+    | '.NEQV.' {$value = " ^ ";};
+
+factorcond returns[String value] :
+    id1=exp opcomp id2=exp {$value = $id1.value + $opcomp.value + $id2.value;}
+    | '(' expcond ')' {$value = "(" + $expcond.value + ")";}
+    | '.NOT.' factorcond {$value= "!" + $factorcond.value;}
+    | '.TRUE.' {$value = "1";}
+    |'.FALSE.' {$value= "0";};
+
+opcomp returns[String value]: '<' {$value = " < ";}
+    | '>' {$value = " > ";}
+    | '<=' {$value = " <= ";}
+    | '>=' {$value = " >= ";}
+    | '==' {$value = " == ";}
+    | '/=' {$value = " != ";};
+
+doval returns[String value] :
+      NUM_INT_CONST {$value = $NUM_INT_CONST.text;}
+      | IDENT {$value = $IDENT.text;};
+
+casos : 'CASE' '(' etiquetas ')' sentlist casos
+    | 'CASE' 'DEFAULT' sentlist
+    | ;
+
+etiquetas: simpvalue etiquetas_P
+    | ':' simpvalue;
+
+etiquetas_P: listaetiqetas
+    | ':' etiquetas_PP|;
+
+etiquetas_PP
+    : simpvalue|;
+
+listaetiqetas : ',' simpvalue listaetiqetas | ;
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
 
@@ -131,15 +146,15 @@ explist returns[String value] :
     |{$value = "";} ;
 
 
-proc_call : 'CALL' IDENT subpparamlist {sentList.add(new SentCall($IDENT.text, $subpparamlist.value));};
+proc_call returns[Sentencia value]: 'CALL' IDENT subpparamlist {$value = new SentCall($IDENT.text, $subpparamlist.value);};
 subpparamlist returns[String value]:
     '(' exp explist ')' {$value = $exp.value + $explist.value;}
     | {$value = "";};
 
 //Zona de implemetenacion de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
-codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist {program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}   'END' 'SUBROUTINE' IDENT;
-codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist[0] sentlist{program.SubProgList.get($i).sentlist = sentList;sentList = new ArrayList();}  IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;}';' 'END' 'FUNCTION' IDENT;
+codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist {program.SubProgList.get($i).sentlist = $sentlist.list;}   'END' 'SUBROUTINE' IDENT;
+codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist[0] sentlist{program.SubProgList.get($i).sentlist = $sentlist.list;}  IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;}';' 'END' 'FUNCTION' IDENT;
 
 
 //Constantes numericas
@@ -166,5 +181,3 @@ STRING_CONSTANT: '\''   (~['\n\r] | '\'\'' )* '\''
                 |'"'  (~["\n\r] | '""' )* '"';
 
 OTHER: . -> skip;
-
-
