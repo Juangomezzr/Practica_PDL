@@ -3,6 +3,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Programa {
+    public boolean hayErrores = false;
     String ident;
     ArrayList<SentenciaAsignacion> Constlist = new ArrayList<>();
     ArrayList<Subprograma> SubProgList = new ArrayList<>();
