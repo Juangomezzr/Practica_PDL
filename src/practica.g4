@@ -60,7 +60,7 @@ sent returns[Sentencia value]:
         IDENT '=' exp ';' {$value = new SentExp($IDENT.text, $exp.value);}
        | proc_call ';' {$value = $proc_call.value;}
        | 'IF' '(' expcond ')' if_P[new SentIf($expcond.value)] {$value = $if_P.value;}
-       | 'DO' do_P
+       | 'DO' do_P {$value = $do_P.value;}
        | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
 
 if_P[SentIf heredada] returns[SentIf value]:
@@ -71,7 +71,9 @@ if_PP[SentIf heredada] returns[SentIf value]:
     'ENDIF' {$value = $heredada;}
     | 'ELSE' {$heredada.setElse(true);} sentlist {$heredada.sentenciasElse.addAll($sentlist.list);} 'ENDIF' {$value = $heredada;};
 
-do_P: 'WHILE' '(' expcond ')' sentlist 'ENDDO' | IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO';
+do_P returns[SentenciaBucle value]:
+    'WHILE' '(' expcond ')' {$value = new SentenciaBucle($expcond.value);} sentlist {$value.sentencias.addAll($sentlist.list);} 'ENDDO'
+    | IDENT '=' i=doval ',' f=doval ',' s=doval  {$value = new SentenciaBucle($IDENT.text, $i.value, $f.value, $s.value);} sentlist {$value.sentencias.addAll($sentlist.list);} 'ENDDO';
 
 expcond returns[String value]:
     factorcond expcond_P {$value = $factorcond.value + $expcond_P.value;};
