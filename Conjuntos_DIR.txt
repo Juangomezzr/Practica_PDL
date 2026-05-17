@@ -164,5 +164,8 @@
 - DIR( casos_P : 'DEFAULT' sentlist ) = { 'DEFAULT' }
 - DIR( casos_P : lambda ) = SIG(casos_P) = { 'END' }
 
+- DIR( casos_PP : 'CASE' casos_P ) = { 'CASE' }
+- DIR (casos_PP : lambda ) = SIG(casos_PP) = { 'END' }
+
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
 - DIR( listaetiqetas : lambda) = {')'}

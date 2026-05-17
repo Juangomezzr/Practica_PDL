@@ -61,7 +61,7 @@ sent returns[Sentencia value]:
        | proc_call ';' {$value = $proc_call.value;}
        | 'IF' '(' expcond ')' if_P[new SentIf($expcond.value)] {$value = $if_P.value;}
        | 'DO' do_P {$value = $do_P.value;}
-       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+       | 'SELECT' 'CASE' '(' exp ')' casos[new SentSwitch($exp.value)] 'END' 'SELECT' {$value = $casos.value;};
 
 if_P[SentIf heredada] returns[SentIf value]:
         sent {$heredada.sentencias.add($sent.value); $value = $heredada;}
@@ -106,22 +106,34 @@ doval returns[String value] :
       NUM_INT_CONST {$value = $NUM_INT_CONST.text;}
       | IDENT {$value = $IDENT.text;};
 
-casos : 'CASE' casos_P;
+casos[SentSwitch heredada] returns[SentSwitch value]:
+    'CASE' casos_P[$heredada] {$value = $casos_P.value;};
 
-casos_P: '(' etiquetas ')' sentlist casos
-    | 'DEFAULT' sentlist
-    | ;
+casos_P[SentSwitch heredada] returns[SentSwitch value]:
+    '(' etiquetas ')' sentlist {$heredada.addCaso(new Caso($etiquetas.list, $sentlist.list));} casos_PP[$heredada] {$value = $casos_PP.value;}
+    | 'DEFAULT' sentlist {$heredada.setDefault($sentlist.list); $value = $heredada;}
+    | {$value = $heredada;};
 
-etiquetas: simpvalue etiquetas_P
-    | ':' simpvalue;
+casos_PP[SentSwitch heredada] returns[SentSwitch value]:
+    'CASE' casos_P[$heredada] {$value = $casos_P.value;}
+    | {$value = $heredada;};
 
-etiquetas_P: listaetiqetas
-    | ':' etiquetas_PP|;
+etiquetas returns[ArrayList<String> list]:
+    {$list = new ArrayList<>();} simpvalue {$list.add($simpvalue.value);} etiquetas_P[$list] {$list = $etiquetas_P.list;}
+    | ':' simpvalue {$list.add("<= " + $simpvalue.value);};
 
-etiquetas_PP
-    : simpvalue|;
+etiquetas_P[ArrayList<String> heredada] returns[ArrayList<String> list]:
+    listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
+    | ':' etiquetas_PP {$heredada.set(0, $heredada.get(0) + " .. " + $etiquetas_PP.value); $list = $heredada;}
+    | {$list = $heredada;};
 
-listaetiqetas : ',' simpvalue listaetiqetas | ;
+etiquetas_PP returns[String value]:
+    simpvalue {$value = $simpvalue.value;}
+    | {$value = "";};
+
+listaetiqetas[ArrayList<String> heredada] returns[ArrayList<String> list]:
+    ',' simpvalue {$heredada.add($simpvalue.value);} listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
+    | {$list = $heredada;};
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
 
