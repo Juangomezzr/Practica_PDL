@@ -108,19 +108,19 @@
     { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT, '(', IDENT, '.NOT.', '.TRUE.', '.FALSE.' }
 - DIR( expcond : lambda ) = SIG(expcond) = CAB'(expcond_P) U SIG(expcond_P) U {')'} = { '.OR.', '.AND.', '.EQV.', '.NEQV.', ')' }
 
--DIR( expcond_P : oplog factorcond expcond_P ) = { '.OR.', '.AND.', '.EQV.', '.NEQV.' }
--DIR( expcond_P : lambda ) = SIG(expcond_P) = SIG(expcond) = { ')' }
+- DIR( expcond_P : oplog factorcond expcond_P ) = { '.OR.', '.AND.', '.EQV.', '.NEQV.' }
+- DIR( expcond_P : lambda ) = SIG(expcond_P) = SIG(expcond) = { ')' }
 
--DIR( oplog : '.OR.' ) = { '.OR.' }
--DIR( oplog : '.AND.' ) = { '.AND.' }
--DIR( oplog : '.EQV.' ) = { '.EQV.' }
--DIR( oplog : '.NEQV.' ) = { '.NEQV.' }
+- DIR( oplog : '.OR.' ) = { '.OR.' }
+- DIR( oplog : '.AND.' ) = { '.AND.' }
+- DIR( oplog : '.EQV.' ) = { '.EQV.' }
+- DIR( oplog : '.NEQV.' ) = { '.NEQV.' }
 
--DIR( factorcond : exp opcomp exp ) = CAB(exp) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT ,'(', IDENT }
--DIR( factorcond : '(' expcond ')' ) = { '(' }
--DIR( factorcond : '.NOT.' factorcond ) = { '.NOT.' }
--DIR( factorcond : '.TRUE.' ) = { '.TRUE.' }
--DIR( factorcond : '.FALSE.' ) = { '.FALSE.' }
+- DIR( factorcond : exp opcomp exp ) = CAB(exp) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O, NUM_REAL_CONST, STRING_CONSTANT ,'(', IDENT }
+- DIR( factorcond : '(' expcond ')' ) = { '(' }
+- DIR( factorcond : '.NOT.' factorcond ) = { '.NOT.' }
+- DIR( factorcond : '.TRUE.' ) = { '.TRUE.' }
+- DIR( factorcond : '.FALSE.' ) = { '.FALSE.' }
 
 - DIR( opcomp : '<' ) = { '<' }
 - DIR( opcomp : '>' ) = { '>' }
@@ -129,19 +129,20 @@
 - DIR( opcomp : '==' ) = { '==' }
 - DIR( opcomp : '/=' ) = { '/=' }
 
-
 - DIR( sent : IDENT '=' exp ';'  ) = { IDENT }
 - DIR( sent : proc_call ';' ) = CAB(proc_call) = { 'CALL' }
 - DIR( sent : 'IF' '(' expcond ')' if_P) = { 'IF' }
-- DIR( sent : 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO' ) = { 'DO' }
-- DIR( sent : 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO' ) = { 'DO' }
+- DIR( sent : 'DO' do_P ) = { 'DO' }
 - DIR( sent : 'SELECT' 'CASE' '(' expcond ')' casos 'END' 'SELECT' ) = { 'SELECT' }
 
 - DIR( if_P : sent) = CAB(sent) = { 'CALL ', ' IDENT ', ' IF ', ' DO ', ' SELECT '}
 - DIR( if_P : 'THEN' sentlist if_PP) = { ' THEN ' }
 
--DIR( if_PP: 'ENDIF' ) = { 'ENDIF' }
--DIR( if_PP: 'ELSE' sentlist 'ENDIF' ) = { 'ELSE' }
+- DIR( if_PP: 'ENDIF' ) = { 'ENDIF' }
+- DIR( if_PP: 'ELSE' sentlist 'ENDIF' ) = { 'ELSE' }
+
+- DIR( do_P: 'WHILE' '(' expcond ')' sentlist 'ENDDO' ) = { 'WHILE' }
+- DIR( do_P: IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO' ) = { IDENT }
 
 - DIR( doval : 'NUM_INT_CONST' ) = { 'NUM_INT_CONST' }
 - DIR( doval : 'IDENT' ) = { 'IDENT' }
@@ -149,12 +150,12 @@
 - DIR( etiquetas: simpvalue etiquetas_P ) = CAB(simpvalue) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
 - DIR( etiquetas : ':' simpvalue ) = { ':' }
 
--DIR( etiquetas_P: listaetiqetas ) = CAB( listaetiquetas ) = { ',' }
--DIR( etiquetas_P: ':' etiquetas_PP ) = { ':' }
--DIR( etiquetas_P: lambda ) = SIG( etiquetas_P ) = { ')' }
+- DIR( etiquetas_P: listaetiqetas ) = CAB( listaetiquetas ) = { ',' }
+- DIR( etiquetas_P: ':' etiquetas_PP ) = { ':' }
+- DIR( etiquetas_P: lambda ) = SIG( etiquetas_P ) = { ')' }
 
--DIR( etiquetas_PP: simpvalue ) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
--DIR( etiquetas_PP: lambda ) = SIG( etiquetas_PP ) = { ')' }
+- DIR( etiquetas_PP: simpvalue ) = { NUM_INT_CONST, NUM_INT_CONST_B, NUM_INT_CONST_H, NUM_INT_CONST_O,  NUM_REAL_CONST, STRING_CONSTANT }
+- DIR( etiquetas_PP: lambda ) = SIG( etiquetas_PP ) = { ')' }
 
 
 - DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
