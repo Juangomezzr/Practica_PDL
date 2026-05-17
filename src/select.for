@@ -1,11 +1,11 @@
 PROGRAM pruebasIf;
 
 INTEGER :: opcion = 2;
-REAL :: calculo_extra;
+REAL :: calculo_extra = 0;
 
 DO WHILE (opcion < 5)
         SELECT CASE (opcion)
-            CASE (1)
+            CASE (4 : 20)
                 calculo_extra = calculo_extra + 10.0;
             CASE (2, 3)
                 calculo_extra = calculo_extra + 20.0;

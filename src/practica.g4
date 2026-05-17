@@ -118,21 +118,22 @@ casos_PP[SentSwitch heredada] returns[SentSwitch value]:
     'CASE' casos_P[$heredada] {$value = $casos_P.value;}
     | {$value = $heredada;};
 
-etiquetas returns[ArrayList<String> list]:
-    {$list = new ArrayList<>();} simpvalue {$list.add($simpvalue.value);} etiquetas_P[$list] {$list = $etiquetas_P.list;}
-    | ':' simpvalue {$list.add("<= " + $simpvalue.value);};
+etiquetas returns[ArrayList<Etiqueta> list]:
+    {$list = new ArrayList<>();} simpvalue {$list.add(new Etiqueta($simpvalue.value));}
+      etiquetas_P[$list] {$list = $etiquetas_P.list;}
+    | {$list = new ArrayList<>();} ':' simpvalue {$list.add(new Etiqueta(null, $simpvalue.value));};
 
-etiquetas_P[ArrayList<String> heredada] returns[ArrayList<String> list]:
+etiquetas_P[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
     listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
-    | ':' etiquetas_PP {$heredada.set(0, $heredada.get(0) + " .. " + $etiquetas_PP.value); $list = $heredada;}
+    | ':' etiquetas_PP {$heredada.set(0, new Etiqueta($heredada.get(0).inicio, $etiquetas_PP.value)); $list = $heredada;}
     | {$list = $heredada;};
 
 etiquetas_PP returns[String value]:
     simpvalue {$value = $simpvalue.value;}
-    | {$value = "";};
+    | {$value = null;};
 
-listaetiqetas[ArrayList<String> heredada] returns[ArrayList<String> list]:
-    ',' simpvalue {$heredada.add($simpvalue.value);} listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
+listaetiqetas[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
+    ',' simpvalue {$heredada.add(new Etiqueta($simpvalue.value));} listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
     | {$list = $heredada;};
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};

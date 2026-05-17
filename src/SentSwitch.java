@@ -33,7 +33,6 @@ public class SentSwitch extends Sentencia{
                 System.out.print("\t\t\t");
                 s.traducir();
             }
-            System.out.println("\t\t\tbreak;");
         }
         System.out.println("\t\t}");
     }
