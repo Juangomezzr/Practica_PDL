@@ -158,9 +158,11 @@
 - DIR( etiquetas_PP: lambda ) = SIG( etiquetas_PP ) = { ')' }
 
 
-- DIR( casos : 'CASE' '(' etiquetas ')' sentlist casos ) = { 'CASE'}
-- DIR( casos : 'CASE' 'DEFAULT' sentlist ) = {'CASE'}
-- DIR( casos : lambda ) = SIG(casos) = {'END','CASE'}
+- DIR( casos : 'CASE' casos_P ) = { 'CASE' }
+
+- DIR( casos_P : '(' etiquetas ')' sentlist casos ) = { '(' }
+- DIR( casos_P : 'DEFAULT' sentlist ) = { 'DEFAULT' }
+- DIR( casos_P : lambda ) = SIG(casos_P) = { 'END' }
 
 - DIR( listaetiqetas : ',' simpvalue listaetiqetas) = {','}
 - DIR( listaetiqetas : lambda) = {')'}

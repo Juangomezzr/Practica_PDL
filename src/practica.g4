@@ -106,8 +106,10 @@ doval returns[String value] :
       NUM_INT_CONST {$value = $NUM_INT_CONST.text;}
       | IDENT {$value = $IDENT.text;};
 
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
+casos : 'CASE' casos_P;
+
+casos_P: '(' etiquetas ')' sentlist casos
+    | 'DEFAULT' sentlist
     | ;
 
 etiquetas: simpvalue etiquetas_P
