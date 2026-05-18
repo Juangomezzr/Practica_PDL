@@ -23,18 +23,17 @@ public class SentenciaBucle extends Sentencia{
         sentencias = new ArrayList<>();
     }
 
-    public void traducir(){
+    public void traducir(int nivel){
         if(isFor){
-            System.out.println("for(" + varControl + " = " + inicio + "; "
+            System.out.println(tabs(nivel) + "for(" + varControl + " = " + inicio + "; "
                     + varControl + " != " + fin + "; "
                     + varControl + " = " + varControl + " + " + paso + "){");
         } else {
-            System.out.println("while(" + condicion + "){");
+            System.out.println(tabs(nivel) + "while(" + condicion + "){");
         }
         for(Sentencia s : sentencias){
-            System.out.print("\t\t");
-            s.traducir();
+            s.traducir(nivel+1);
         }
-        System.out.println("\t}");
+        System.out.println(tabs(nivel) + "}");
     }
 }

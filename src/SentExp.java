@@ -8,8 +8,8 @@ public class SentExp extends Sentencia{
         this.ident = ident;
         this.exp = exp;
     }
-    public void traducir(){
-        System.out.println(ident + " = " + exp + ";");
+    public void traducir(int nivel){
+        System.out.println(tabs(nivel) + ident + " = " + exp + ";");
     }
 
     public String getIdent() {

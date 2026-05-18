@@ -22,18 +22,17 @@ public class SentSwitch extends Sentencia{
         this.hasDefault = true;
     }
 
-    public void traducir() {
-        System.out.println("switch(" + expresion + "){");
+    public void traducir(int nivel) {
+        System.out.println(tabs(nivel) + "switch(" + expresion + "){");
         for (Caso c : casos) {
-            c.traducir();
+            c.traducir(nivel+1);
         }
         if (hasDefault) {
-            System.out.println("\t\tdefault:");
+            System.out.println(tabs(nivel+1) + "default:");
             for (Sentencia s : sentenciasDefault) {
-                System.out.print("\t\t\t");
-                s.traducir();
+                s.traducir(nivel+2);
             }
         }
-        System.out.println("\t\t}");
+        System.out.println(tabs(nivel) + "}");
     }
 }

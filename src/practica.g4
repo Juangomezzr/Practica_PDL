@@ -30,9 +30,9 @@ defcte[String t]: ',' 'PARAMETER' '::' IDENT   '=' simpvalue {program.Constlist.
 ctelist[String t]:  | ',' IDENT  '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t]  ;
 simpvalue returns[String value]:
     NUM_INT_CONST { $value = $NUM_INT_CONST.text;}
-    |NUM_INT_CONST_B { $value = $NUM_INT_CONST_B.text;}
-    |NUM_INT_CONST_H { $value = $NUM_INT_CONST_H.text;}
-    |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
+    |NUM_INT_CONST_B { $value = "0b" + $NUM_INT_CONST_B.text.substring(2, $NUM_INT_CONST_B.text.length()-1);}
+    |NUM_INT_CONST_H { $value = "0x" + $NUM_INT_CONST_H.text.substring(2, $NUM_INT_CONST_H.text.length()-1);}
+    |NUM_INT_CONST_O { $value = "0o" + $NUM_INT_CONST_O.text.substring(2, $NUM_INT_CONST_O.text.length()-1);}
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';

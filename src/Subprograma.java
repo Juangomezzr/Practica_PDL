@@ -53,7 +53,6 @@ public class Subprograma {
 
 
         for(Sentencia s: sentlist){
-            System.out.print("\t");
 
             if(s instanceof SentExp) {
 
@@ -61,7 +60,7 @@ public class Subprograma {
                     System.out.print("*");
                 }
             }
-                s.traducir();
+                s.traducir(1);
 
         }
         if (!returnType.equals("void")) {

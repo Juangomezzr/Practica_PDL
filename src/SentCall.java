@@ -5,7 +5,7 @@ public class SentCall extends Sentencia{
         this.ident = ident;
         this.parametros = parametros;
     }
-    public void traducir(){
-        System.out.println(ident + "(" + parametros + ");");
+    public void traducir(int nivel){
+        System.out.println(tabs(nivel) + ident + "(" + parametros + ");");
     }
 }

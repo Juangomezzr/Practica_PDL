@@ -2,10 +2,12 @@ PROGRAM pruebasDO;
 
 INTEGER :: a = 5;
 INTEGER :: b = 10;
-
-IF (a < b) c = 1;
+INTEGER :: c = 0;
 
 DO WHILE (a < b)
+    DO WHILE (c < 5)
+    c = c + 1;
+    ENDDO
     a = a + 1;
 ENDDO
 

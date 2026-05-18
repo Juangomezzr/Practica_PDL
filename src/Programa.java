@@ -43,8 +43,7 @@ public class Programa {
 
         //Cuerpo
         for (Sentencia s: main.sentlist){
-            System.out.print("\t");
-            s.traducir();
+            s.traducir(1);
         }
 
         System.out.println("}");
