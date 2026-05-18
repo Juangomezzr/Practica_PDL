@@ -23,11 +23,18 @@ CHARACTER(10) :: mensaje1 = 'Hola', mensaje2 = 'Mundo';
             INTEGER, INTENT(IN) b;
         END FUNCTION Sumar
 
+        SUBROUTINE proc1 ( c, d , e )
+             REAL, INTENT (OUT) c;
+             INTEGER, INTENT (IN) d;
+             INTEGER, INTENT (INOUT) e;
+        END SUBROUTINE proc1
+
     END INTERFACE
 
     contador = contador + 1;
     total = total + 45.6;
     CALL ImprimirMensaje('Bienvenido');
+    CALL proc1(param1, param2 , param3);
     promedio = total / 2.0;
 
 END PROGRAM prog1
@@ -35,6 +42,7 @@ END PROGRAM prog1
 SUBROUTINE ImprimirMensaje(texto)
     CHARACTER(10), INTENT(IN) texto;
     CALL MostrarEnPantalla(texto);
+
 END SUBROUTINE ImprimirMensaje
 
 FUNCTION Sumar(a, b)
@@ -46,3 +54,14 @@ FUNCTION Sumar(a, b)
     suma = a +b;
     Sumar = suma;
 END FUNCTION Sumar
+
+SUBROUTINE proc1 ( c, d , e )
+ REAL, INTENT (OUT) c;
+ INTEGER, INTENT (IN) d;
+ INTEGER, INTENT (INOUT) e;
+ ...
+ c = 1 ;
+ ...
+ e = 2 +3 ;
+ ...
+END SUBROUTINE proc1

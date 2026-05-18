@@ -1,15 +1,15 @@
 import java.util.Objects;
 
 public class SentExp extends Sentencia{
-    private String ident;
+    public String ident;
     private String exp;
 
     public SentExp(String ident, String exp){
         this.ident = ident;
         this.exp = exp;
     }
-    public void traducir(){
-        System.out.println(ident + " = " + exp + ";");
+    public void traducir(int nivel){
+        System.out.println(tabs(nivel) + ident + " = " + exp + ";");
     }
 
     public String getIdent() {

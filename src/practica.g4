@@ -30,9 +30,9 @@ defcte[String t]: ',' 'PARAMETER' '::' IDENT   '=' simpvalue {program.Constlist.
 ctelist[String t]:  | ',' IDENT  '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t]  ;
 simpvalue returns[String value]:
     NUM_INT_CONST { $value = $NUM_INT_CONST.text;}
-    |NUM_INT_CONST_B { $value = $NUM_INT_CONST_B.text;}
-    |NUM_INT_CONST_H { $value = $NUM_INT_CONST_H.text;}
-    |NUM_INT_CONST_O { $value = $NUM_INT_CONST_O.text;}
+    |NUM_INT_CONST_B { $value = "0b" + $NUM_INT_CONST_B.text.substring(2, $NUM_INT_CONST_B.text.length()-1);}
+    |NUM_INT_CONST_H { $value = "0x" + $NUM_INT_CONST_H.text.substring(2, $NUM_INT_CONST_H.text.length()-1);}
+    |NUM_INT_CONST_O { $value = "0o" + $NUM_INT_CONST_O.text.substring(2, $NUM_INT_CONST_O.text.length()-1);}
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
     |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
@@ -60,9 +60,8 @@ sent returns[Sentencia value]:
         IDENT '=' exp ';' {$value = new SentExp($IDENT.text, $exp.value);}
        | proc_call ';' {$value = $proc_call.value;}
        | 'IF' '(' expcond ')' if_P[new SentIf($expcond.value)] {$value = $if_P.value;}
-       | 'DO' 'WHILE' '(' expcond ')' sentlist 'ENDDO'
-       | 'DO' IDENT '=' doval ',' doval ',' doval sentlist 'ENDDO'
-       | 'SELECT' 'CASE' '(' exp ')' casos 'END' 'SELECT' ;
+       | 'DO' do_P {$value = $do_P.value;}
+       | 'SELECT' 'CASE' '(' exp ')' casos[new SentSwitch($exp.value)] 'END' 'SELECT' {$value = $casos.value;};
 
 if_P[SentIf heredada] returns[SentIf value]:
         sent {$heredada.sentencias.add($sent.value); $value = $heredada;}
@@ -72,6 +71,9 @@ if_PP[SentIf heredada] returns[SentIf value]:
     'ENDIF' {$value = $heredada;}
     | 'ELSE' {$heredada.setElse(true);} sentlist {$heredada.sentenciasElse.addAll($sentlist.list);} 'ENDIF' {$value = $heredada;};
 
+do_P returns[SentenciaBucle value]:
+    'WHILE' '(' expcond ')' {$value = new SentenciaBucle($expcond.value);} sentlist {$value.sentencias.addAll($sentlist.list);} 'ENDDO'
+    | IDENT '=' i=doval ',' f=doval ',' s=doval  {$value = new SentenciaBucle($IDENT.text, $i.value, $f.value, $s.value);} sentlist {$value.sentencias.addAll($sentlist.list);} 'ENDDO';
 
 expcond returns[String value]:
     factorcond expcond_P {$value = $factorcond.value + $expcond_P.value;};
@@ -104,20 +106,35 @@ doval returns[String value] :
       NUM_INT_CONST {$value = $NUM_INT_CONST.text;}
       | IDENT {$value = $IDENT.text;};
 
-casos : 'CASE' '(' etiquetas ')' sentlist casos
-    | 'CASE' 'DEFAULT' sentlist
-    | ;
+casos[SentSwitch heredada] returns[SentSwitch value]:
+    'CASE' casos_P[$heredada] {$value = $casos_P.value;};
 
-etiquetas: simpvalue etiquetas_P
-    | ':' simpvalue;
+casos_P[SentSwitch heredada] returns[SentSwitch value]:
+    '(' etiquetas ')' sentlist {$heredada.addCaso(new Caso($etiquetas.list, $sentlist.list));} casos_PP[$heredada] {$value = $casos_PP.value;}
+    | 'DEFAULT' sentlist {$heredada.setDefault($sentlist.list); $value = $heredada;}
+    | {$value = $heredada;};
 
-etiquetas_P: listaetiqetas
-    | ':' etiquetas_PP|;
+casos_PP[SentSwitch heredada] returns[SentSwitch value]:
+    'CASE' casos_P[$heredada] {$value = $casos_P.value;}
+    | {$value = $heredada;};
 
-etiquetas_PP
-    : simpvalue|;
+etiquetas returns[ArrayList<Etiqueta> list]:
+    {$list = new ArrayList<>();} simpvalue {$list.add(new Etiqueta($simpvalue.value));}
+      etiquetas_P[$list] {$list = $etiquetas_P.list;}
+    | {$list = new ArrayList<>();} ':' simpvalue {$list.add(new Etiqueta(null, $simpvalue.value));};
 
-listaetiqetas : ',' simpvalue listaetiqetas | ;
+etiquetas_P[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
+    listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
+    | ':' etiquetas_PP {$heredada.set(0, new Etiqueta($heredada.get(0).inicio, $etiquetas_PP.value)); $list = $heredada;}
+    | {$list = $heredada;};
+
+etiquetas_PP returns[String value]:
+    simpvalue {$value = $simpvalue.value;}
+    | {$value = null;};
+
+listaetiqetas[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
+    ',' simpvalue {$heredada.add(new Etiqueta($simpvalue.value));} listaetiqetas[$heredada] {$list = $listaetiqetas.list;}
+    | {$list = $heredada;};
 
 exp returns[String value] : factor exp_P {$value = $factor.value + $exp_P.value;};
 
@@ -181,5 +198,3 @@ STRING_CONSTANT: '\''   (~['\n\r] | '\'\'' )* '\''
                 |'"'  (~["\n\r] | '""' )* '"';
 
 OTHER: . -> skip;
-
-

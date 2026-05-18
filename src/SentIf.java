@@ -21,22 +21,19 @@ public class SentIf extends Sentencia{
         isElse = anElse;
     }
 
-    public void traducir(){
-        System.out.println("if("+condicion+"){");
+    public void traducir(int nivel){
+        System.out.println(tabs(nivel) + "if("+condicion+"){");
         for(Sentencia s: sentencias){
-            System.out.print("\t\t");
-            s.traducir();
+            s.traducir(nivel+1);
         }
-        System.out.print("\t} ");
         if(!isElse){
-            System.out.println(" ");
+            System.out.println(tabs(nivel) + "}");
         }else{
-            System.out.println("else {");
+            System.out.println(tabs(nivel) + "} else {");
             for(Sentencia s: sentenciasElse){
-                System.out.print("\t\t");
-                s.traducir();
+                s.traducir(nivel+1);
             }
-            System.out.println("\t}");
+            System.out.println(tabs(nivel) + "}");
 
         }
 
