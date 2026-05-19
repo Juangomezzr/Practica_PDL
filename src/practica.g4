@@ -32,12 +32,6 @@ prg: 'PROGRAM' IDENT {program.ident = $IDENT.text;} ';'
     {
         if(!program.hayErrores){program.traducir();}
     };
-/*
-X -> Xa | b
-
-x -> bX'
-x' -> aX' | ;
-*/
 
 //Partes programa
 dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main];
@@ -234,8 +228,11 @@ explist returns[String value] :
     ',' exp explist {$value = "," + $exp.value + $explist.value;}
     |{$value = "";} ;
 
+proc_call returns[Sentencia value]: 'CALL' IDENT subpparamlist {
+    // Llamamos a nuestro método en Java pasándole el nombre y el string de parámetros
+    String paramsListosParaC = program.procesarParametrosLlamada($IDENT.text, $subpparamlist.value);
+    $value = new SentCall($IDENT.text, paramsListosParaC);};
 
-proc_call returns[Sentencia value]: 'CALL' IDENT subpparamlist {$value = new SentCall($IDENT.text, $subpparamlist.value);};
 subpparamlist returns[String value]:
     '(' exp explist ')' {$value = $exp.value + $explist.value;}
     | {$value = "";};

@@ -20,11 +20,9 @@ REAL :: velocidad = 15.5, tiempo = 2.0, posicion_final;
 
     ! Si a es distinto de b, intercambiamos sus valores
     IF (a /= b) THEN
-        ! Aqui tu traductor deberia generar: Intercambiar(&a, &b);
         CALL Intercambiar(a, b);
     ENDIF
 
-    ! Aqui deberia generar: CalcularCaida(velocidad, tiempo, gravedad, &posicion_final);
     CALL CalcularCaida(velocidad, tiempo, gravedad, posicion_final);
 
 END PROGRAM test_matematicas
@@ -45,6 +43,6 @@ SUBROUTINE CalcularCaida(v0, t, g, pos)
     REAL, INTENT(IN) g;
     REAL, INTENT(OUT) pos;
 
-    ! Operaciones encadenadas para probar la regla 'exp' y 'factor'
+    ! Operaciones encadenadas
     pos = (v0 * t) + (0.5 * g * (t * t));
 END SUBROUTINE CalcularCaida
