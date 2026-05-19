@@ -31,8 +31,9 @@ public class SentenciaBucle extends Sentencia{
         } else {
             System.out.println(tabs(nivel) + "while(" + condicion + "){");
         }
-        for(Sentencia s : sentencias){
+        for(Sentencia s: sentencias){
             s.traducir(nivel+1);
+            System.out.flush();
         }
         System.out.println(tabs(nivel) + "}");
     }

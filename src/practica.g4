@@ -3,18 +3,16 @@ grammar practica;
 @parser::members{
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
-private ArrayList<Sentencia> sentList = new ArrayList();
-
 }
 
-prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
+prg: 'PROGRAM' IDENT {program.ident = $IDENT.text;} ';'
     dcllist[1]
     cabecera
-    sentlist {program.main.sentlist.addAll(sentList); sentList = new ArrayList();}
+    sentlist {program.main.sentlist.addAll($sentlist.list);}
     'END' 'PROGRAM' IDENT
     subproglist[0]
     {
-    if(!program.hayErrores){program.traducir();}
+        if(!program.hayErrores){program.traducir();}
     };
 /*
 X -> Xa | b
@@ -219,13 +217,12 @@ subpparamlist returns[String value]:
 
 //Zona de implemetenacion de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
-codproc[int i]:  'SUBROUTINE' { subprog = new Subprograma(); } idInicio=IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist
+codproc[int i]: 'SUBROUTINE' { subprog = new Subprograma(); } idInicio=IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist
 {
-    program.SubProgList.get($i).sentlist = sentList; sentList = new ArrayList<>();
+    program.SubProgList.get($i).sentlist = $sentlist.list;
 }
     'END' 'SUBROUTINE' idFin=IDENT
 {
-    // COMPROBACIÓN 1: Coincidencia de identificadores en implementación de SUBROUTINE
     if (!$idInicio.text.equals($idFin.text)) {
         System.err.println("Error Semántico: La implementación del SUBROUTINE empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
         program.hayErrores = true;
@@ -233,7 +230,7 @@ codproc[int i]:  'SUBROUTINE' { subprog = new Subprograma(); } idInicio=IDENT fo
 };
 codfun[int i]: 'FUNCTION' { subprog = new Subprograma(); } idInicio=IDENT '(' nomparamlist ')' tipo '::' idRetorno=IDENT ';' dec_f_paramlist[0] dcllist[0] sentlist
 {
-    program.SubProgList.get($i).sentlist = sentList; sentList = new ArrayList<>();
+    program.SubProgList.get($i).sentlist = $sentlist.list;
 }
     idAsignacion=IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;} ';' 'END' 'FUNCTION' idFin=IDENT
 {
