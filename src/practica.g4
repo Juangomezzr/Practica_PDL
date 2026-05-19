@@ -3,6 +3,24 @@ grammar practica;
 @parser::members{
 private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
+
+private String procesarString(String s) {
+    if (s.startsWith("'")) {
+        // Delimitada por comillas simples
+        String contenido = s.substring(1, s.length() - 1);
+        // Comillas simples duplicadas → comilla simple
+        contenido = contenido.replace("''", "'");
+        // Escapar comillas dobles que pudiera haber dentro
+        contenido = contenido.replace("\"", "\\\"");
+        return "\"" + contenido + "\"";
+    } else {
+        // Delimitada por comillas dobles
+        String contenido = s.substring(1, s.length() - 1);
+        // Comillas dobles duplicadas → comilla doble escapada
+        contenido = contenido.replace("\"\"", "\\\"");
+        return "\"" + contenido + "\"";
+    }
+}
 }
 
 prg: 'PROGRAM' IDENT {program.ident = $IDENT.text;} ';'
@@ -41,7 +59,7 @@ simpvalue returns[String value]:
     |NUM_INT_CONST_H { $value = "0x" + $NUM_INT_CONST_H.text.substring(2, $NUM_INT_CONST_H.text.length()-1);}
     |NUM_INT_CONST_O { $value = "0o" + $NUM_INT_CONST_O.text.substring(2, $NUM_INT_CONST_O.text.length()-1);}
     |NUM_REAL_CONST { $value = $NUM_REAL_CONST.text;}
-    |STRING_CONSTANT { $value = $STRING_CONSTANT.text.replace("'", "\"");};
+    |STRING_CONSTANT { $value = procesarString($STRING_CONSTANT.text);};
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
 tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength {$text += $charlength.value; } ;
 charlength returns[String value]: {$value = "";} | '(' NUM_INT_CONST ')' {$value = "["+ $NUM_INT_CONST.text+"]";};
