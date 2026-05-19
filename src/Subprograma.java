@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,15 +52,11 @@ public class Subprograma {
 
 
         for(Sentencia s: sentlist){
-
-            if(s instanceof SentExp) {
-
-                if(punteros.contains("*"+s.getIdent())){
-                    System.out.print("*");
-                }
-            }
+            if(s instanceof SentExp && punteros.contains("*" + s.getIdent())){
+                s.traducir(1, true);  // true = es puntero
+            } else {
                 s.traducir(1);
-
+            }
         }
         if (!returnType.equals("void")) {
             System.out.println("\t"+"return "  +returnExp+ ";");

@@ -5,13 +5,21 @@ private Subprograma subprog = new Subprograma();
 private Programa program = new Programa();
 }
 
-prg: 'PROGRAM' IDENT{program.ident = $IDENT.text;}  ';'
+prg: 'PROGRAM' IDENT {program.ident = $IDENT.text;} ';'
     dcllist[1]
     cabecera
     sentlist {program.main.sentlist.addAll($sentlist.list);}
     'END' 'PROGRAM' IDENT
     subproglist[0]
-    {program.traducir();};
+    {
+        if(!program.hayErrores){program.traducir();}
+    };
+/*
+X -> Xa | b
+
+x -> bX'
+x' -> aX' | ;
+*/
 
 //Partes programa
 dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main];
@@ -23,7 +31,6 @@ sentlist returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$
 sentlist_P returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$list.add($sent.value);} tail=sentlist_P {$list.addAll($tail.list);}| {$list = new ArrayList();};
 
 //Primera zona declaraciones
-
 dcl[int is_main] : tipo def_P[$is_main,$tipo.text] ;
 def_P[int is_main,String t]: defcte[$t]  | defvar[$is_main,$t];
 defcte[String t]: ',' 'PARAMETER' '::' IDENT   '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t] ';' ;
@@ -43,17 +50,57 @@ varlist_P: ',' IDENT init varlist_P  | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
 //Segunda zona declaraciones
-decproc:  'SUBROUTINE'{subprog.returnType = "void";}  IDENT {subprog.identificador = $IDENT.text;}  formal_paramlist dec_s_paramlist[0] 'END' 'SUBROUTINE' IDENT ;
+decproc:  'SUBROUTINE' {subprog.returnType = "void";} idInicio=IDENT {subprog.identificador = $idInicio.text;}
+          formal_paramlist dec_s_paramlist[0]
+          'END' 'SUBROUTINE' idFin=IDENT
+{
+    // COMPROBACIÓN 1: Coincidencia de identificadores en declaración de SUBROUTINE
+    if (!$idInicio.text.equals($idFin.text)) {
+        System.err.println("Error Semántico: El SUBROUTINE empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
+        program.hayErrores = true;
+    }
+};
 formal_paramlist: | '(' nomparamlist ')';
 
 nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text)); } nomparamlist_P;
 nomparamlist_P: | ',' nomparamlist;
 
-dec_s_paramlist[int i]: | tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' IDENT ';' dec_s_paramlist[$i +1];
-tipoparam : 'IN' | 'OUT' | 'INOUT';
-decfun : 'FUNCTION'  IDENT {subprog.identificador = $IDENT.text;} '(' nomparamlist ')' tipo {subprog.returnType = $tipo.text;} '::' IDENT';' dec_f_paramlist[0] 'END' 'FUNCTION' IDENT;
-dec_f_paramlist[int i]:  tipo {subprog.parametros.get(i).tipo = $tipo.text;} ',' 'INTENT' '(' 'IN' ')' IDENT ';' dec_f_paramlist[$i + 1] | ;
+dec_s_paramlist[int i]:
+    | tipo {subprog.parametros.get($i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' idParam=IDENT
+    {
+        // COMPROBACIÓN 2: El nombre del parámetro debe coincidir
+        if (!subprog.parametros.get($i).ident.equals($idParam.text)) {
+            System.err.println("Error Semántico: El parámetro '" + $idParam.text + "' no coincide con el definido en la cabecera '" + subprog.parametros.get($i).ident + "'.");
+            program.hayErrores = true;
+        }
+        subprog.parametros.get($i).ident = $tipoparam.value + $idParam.text ;
+    } ';' dec_s_paramlist[$i +1];
+tipoparam returns[String value] : 'IN'{$value = "";} | 'OUT'{$value = "*";} | 'INOUT'{$value = "*";};
 
+decfun : 'FUNCTION' idInicio=IDENT {subprog.identificador = $idInicio.text;} '(' nomparamlist ')' tipo {subprog.returnType = $tipo.text;} '::' idRetorno=IDENT';' dec_f_paramlist[0] 'END' 'FUNCTION' idFin=IDENT
+{
+    // COMPROBACIÓN 3 (Declaración): Nombre de la función asociado al tipo devuelto
+    if (!$idInicio.text.equals($idRetorno.text)) {
+        System.err.println("Error Semántico: En la FUNCTION '" + $idInicio.text + "', el tipo de retorno está asociado a un identificador distinto ('" + $idRetorno.text + "').");
+        program.hayErrores = true;
+    }
+    // COMPROBACIÓN 1: Coincidencia de nombre al principio y al final
+    if (!$idInicio.text.equals($idFin.text)) {
+        System.err.println("Error Semántico: La FUNCTION empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
+        program.hayErrores = true;
+    }
+};
+
+dec_f_paramlist[int i]:
+    tipo {subprog.parametros.get($i).tipo = $tipo.text;} ',' 'INTENT' '(' 'IN' ')' idParam=IDENT ';'
+    {
+        // COMPROBACIÓN 2 (Funciones): El nombre del parámetro debe coincidir
+        if (!subprog.parametros.get($i).ident.equals($idParam.text)) {
+            System.err.println("Error Semántico: El parámetro '" + $idParam.text + "' no coincide con el definido en la cabecera '" + subprog.parametros.get($i).ident + "'.");
+            program.hayErrores = true;
+        }
+    } dec_f_paramlist[$i + 1]
+    | ;
 
 //Zona de sentencias de programas
 sent returns[Sentencia value]:
@@ -170,8 +217,39 @@ subpparamlist returns[String value]:
 
 //Zona de implemetenacion de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
-codproc[int i]:  'SUBROUTINE' IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist {program.SubProgList.get($i).sentlist = $sentlist.list;}   'END' 'SUBROUTINE' IDENT;
-codfun[int i]: 'FUNCTION' IDENT '(' nomparamlist ')' tipo '::' IDENT ';'dec_f_paramlist[0] dcllist[0] sentlist{program.SubProgList.get($i).sentlist = $sentlist.list;}  IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;}';' 'END' 'FUNCTION' IDENT;
+codproc[int i]: 'SUBROUTINE' { subprog = new Subprograma(); } idInicio=IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist
+{
+    program.SubProgList.get($i).sentlist = $sentlist.list;
+}
+    'END' 'SUBROUTINE' idFin=IDENT
+{
+    if (!$idInicio.text.equals($idFin.text)) {
+        System.err.println("Error Semántico: La implementación del SUBROUTINE empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
+        program.hayErrores = true;
+    }
+};
+codfun[int i]: 'FUNCTION' { subprog = new Subprograma(); } idInicio=IDENT '(' nomparamlist ')' tipo '::' idRetorno=IDENT ';' dec_f_paramlist[0] dcllist[0] sentlist
+{
+    program.SubProgList.get($i).sentlist = $sentlist.list;
+}
+    idAsignacion=IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;} ';' 'END' 'FUNCTION' idFin=IDENT
+{
+    // COMPROBACIÓN 3 (Implementación): Nombre de la función asociado al tipo devuelto
+    if (!$idInicio.text.equals($idRetorno.text)) {
+        System.err.println("Error Semántico: En la implementación de la FUNCTION '" + $idInicio.text + "', el tipo de retorno está asociado a un identificador distinto ('" + $idRetorno.text + "').");
+        program.hayErrores = true;
+    }
+    // COMPROBACIÓN 3 (Implementación): La última asignación debe ser al nombre de la función
+    if (!$idInicio.text.equals($idAsignacion.text)) {
+        System.err.println("Error Semántico: La última asignación de la FUNCTION '" + $idInicio.text + "' se hace sobre la variable '" + $idAsignacion.text + "', no sobre el nombre de la función.");
+        program.hayErrores = true;
+    }
+    // COMPROBACIÓN 1: Coincidencia de nombre al principio y al final
+    if (!$idInicio.text.equals($idFin.text)) {
+        System.err.println("Error Semántico: La implementación de la FUNCTION empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
+        program.hayErrores = true;
+    }
+};
 
 
 //Constantes numericas

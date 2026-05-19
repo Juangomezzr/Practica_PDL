@@ -3,7 +3,8 @@ public abstract class Sentencia {
     String exp;
 
     public void traducir() { traducir(1); }
-    public void traducir(int nivel) {}
+    public void traducir(int nivel) {System.err.println("ERROR: se está llamando al traducir() BASE de " + this.getClass().getSimpleName());}
+    public void traducir(int nivel, boolean puntero) { traducir(nivel); }
 
     public String getIdent() { return ident; }
     public String getExp() { return exp; }
