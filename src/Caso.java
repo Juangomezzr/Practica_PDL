@@ -16,7 +16,7 @@ public class Caso {
         for (Sentencia s : sentencias) {
             s.traducir(nivel+1);
         }
-        System.out.println(tabs(nivel) + "break;");
+        System.out.println(tabs(nivel+1) + "break;");
     }
 
     private String tabs(int nivel) {
