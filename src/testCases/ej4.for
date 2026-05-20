@@ -1,6 +1,6 @@
 PROGRAM test_final;
 
-INTEGER, PARAMETER :: bin = b´1010´, oct = o´17´, hex = z´1F´;
+INTEGER, PARAMETER :: bin = b´1010´, oct = o´740´, hex = z´A34´;
 
 INTEGER :: a = 2, b = 3, c = 0;
 INTEGER :: resultado;
