@@ -196,7 +196,7 @@ etiquetas_P[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
 
 etiquetas_PP returns[String value]:
     simpvalue {$value = $simpvalue.value;}
-    | {$value = null;};
+    | {$value = "";};
 
 listaetiqetas[ArrayList<Etiqueta> heredada] returns[ArrayList<Etiqueta> list]:
     ',' simpvalue {$heredada.add(new Etiqueta($simpvalue.value));} listaetiqetas[$heredada] {$list = $listaetiqetas.list;}

@@ -13,8 +13,6 @@ public class Programa {
     }
     public void traducir(){
 
-        System.out.println("Program " + ident + ";");
-
         for(int i = 0; i < Constlist.size(); i++){
             System.out.print("#define ");
             Constlist.get(i).traducirConst();

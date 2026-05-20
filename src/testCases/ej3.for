@@ -4,12 +4,19 @@ INTEGER, PARAMETER :: limite = 10, inicio = 1, paso = 1;
 INTEGER :: iterador, suma_total = 0;
 INTEGER :: opcion = 2;
 REAL :: calculo_extra;
+CHARACTER (10):: var7, var8;
+CHARACTER :: var4, var5 = "-", var6;
 
     INTERFACE
         SUBROUTINE EvaluarOpcion(op, res)
             INTEGER, INTENT(IN) op;
             REAL, INTENT(OUT) res;
         END SUBROUTINE EvaluarOpcion
+        FUNCTION fun1 ( a, b )
+         INTEGER :: fun1;
+         INTEGER, INTENT (IN) a;
+         CHARACTER(4), INTENT (IN) b;
+        END FUNCTION fun1
     END INTERFACE
 
     ! Prueba de bucle DO clasico (requiere los 3 doval segun tu gramatica)
@@ -52,3 +59,4 @@ SUBROUTINE EvaluarOpcion(op, res)
 
     res = 0.0;
 END SUBROUTINE EvaluarOpcion
+
