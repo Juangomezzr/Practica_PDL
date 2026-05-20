@@ -63,7 +63,7 @@ varlist[int is_main, String t]: IDENT init
 
 varlist_P[int is_main, String t]:
     ',' IDENT init
-    {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text, $t, $init.value));}}
+    {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text, null, $init.value));}}
     varlist_P[$is_main, $t]
     | ;
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};

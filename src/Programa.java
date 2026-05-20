@@ -1,6 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 public class Programa {
     public boolean hayErrores = false;
@@ -35,10 +33,25 @@ public class Programa {
         System.out.println("{");
 
         //Declaraciones variables
-        for(SentenciaAsignacion s : main.parametros){
-            System.out.print("\t");
-            s.traducir();
-            System.out.println(";");
+        for(int i = 0; i < main.parametros.size(); i++){
+            SentenciaAsignacion s = main.parametros.get(i);
+            if(s.tipo != null){
+                // Primera variable de la declaración — nueva línea
+                System.out.print("\t" + s.tipo + " ");
+            } else {
+                // Variable adicional — misma línea
+                System.out.print(", ");
+            }
+            // Imprimir ident y posible inicialización
+            if(s.exp != null){
+                System.out.print(s.ident + " = " + s.exp);
+            } else {
+                System.out.print(s.ident);
+            }
+            // Cerrar con ; solo si la siguiente es nueva declaración o es la última
+            if(i == main.parametros.size()-1 || main.parametros.get(i+1).tipo != null){
+                System.out.println(";");
+            }
         }
 
         //Cuerpo
@@ -117,7 +130,7 @@ public class Programa {
                 actual.append(c);
             }
         }
-        if (actual.length() > 0) {
+        if (!actual.isEmpty()) {
             list.add(actual.toString());
         }
         return list;
