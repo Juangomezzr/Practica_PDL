@@ -15,8 +15,9 @@ CHARACTER :: var4, var5 = "-", var6;
         FUNCTION fun1 ( a, b )
          INTEGER :: fun1;
          INTEGER, INTENT (IN) a;
-         CHARACTER(4), INTENT (IN) b;
+         REAL, INTENT (IN) b;
         END FUNCTION fun1
+
     END INTERFACE
 
     ! Prueba de bucle DO clasico (requiere los 3 doval segun tu gramatica)
@@ -60,3 +61,10 @@ SUBROUTINE EvaluarOpcion(op, res)
     res = 0.0;
 END SUBROUTINE EvaluarOpcion
 
+FUNCTION fun1 ( a, b )
+         INTEGER :: fun1;
+         INTEGER, INTENT (IN) a;
+         REAL, INTENT (IN) b;
+         CALL proc2;
+          fun1 = a * 2;
+        END FUNCTION fun1
