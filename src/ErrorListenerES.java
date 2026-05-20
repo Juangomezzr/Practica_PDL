@@ -30,7 +30,7 @@ public class ErrorListenerES extends BaseErrorListener {
         String causa = determinarCausa(encontrado, esperado);
 
         System.err.println(
-                "\nError sintáctico en línea " + line +
+                "\nError Sintáctico en línea " + line +
                         ", columna " + charPositionInLine + ".\n" +
                         "Se esperaba " + esperado +
                         " y se encontró '" + encontrado + "'." +
