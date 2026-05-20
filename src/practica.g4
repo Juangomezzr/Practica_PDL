@@ -6,17 +6,12 @@ private Programa program = new Programa();
 
 private String procesarString(String s) {
     if (s.startsWith("'")) {
-        // Delimitada por comillas simples
         String contenido = s.substring(1, s.length() - 1);
-        // Comillas simples duplicadas → comilla simple
         contenido = contenido.replace("''", "'");
-        // Escapar comillas dobles que pudiera haber dentro
         contenido = contenido.replace("\"", "\\\"");
         return "\"" + contenido + "\"";
     } else {
-        // Delimitada por comillas dobles
         String contenido = s.substring(1, s.length() - 1);
-        // Comillas dobles duplicadas → comilla doble escapada
         contenido = contenido.replace("\"\"", "\\\"");
         return "\"" + contenido + "\"";
     }
@@ -33,7 +28,7 @@ prg: 'PROGRAM' IDENT {program.ident = $IDENT.text;} ';'
         if(!program.hayErrores){program.traducir();}
     };
 
-//Partes programa
+// Estructura general
 dcllist[int is_main]: | dcl[$is_main] dcllist[$is_main];
 cabecera:  | 'INTERFACE' cablist 'END' 'INTERFACE';
 cablist: decproc {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog | decfun {program.SubProgList.add(subprog);subprog = new Subprograma();} decsubprog;
@@ -42,7 +37,7 @@ decsubprog: | decproc {program.SubProgList.add(subprog);subprog = new Subprogram
 sentlist returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$list.add($sent.value);} sentlist_P {$list.addAll($sentlist_P.list);};
 sentlist_P returns [ArrayList<Sentencia> list]: {$list = new ArrayList();} sent {$list.add($sent.value);} tail=sentlist_P {$list.addAll($tail.list);}| {$list = new ArrayList();};
 
-//Primera zona declaraciones
+// Primera zona de declaraciones
 dcl[int is_main] : tipo def_P[$is_main,$tipo.text] ;
 def_P[int is_main,String t]: defcte[$t]  | defvar[$is_main,$t];
 defcte[String t]: ',' 'PARAMETER' '::' IDENT   '=' simpvalue {program.Constlist.add(new SentenciaAsignacion($IDENT.text,$t,$simpvalue.value));} ctelist[$t] ';' ;
@@ -56,24 +51,48 @@ simpvalue returns[String value]:
     |STRING_CONSTANT { $value = procesarString($STRING_CONSTANT.text);};
 defvar[int is_main,String t]: '::' varlist[$is_main,$t]  ';';
 tipo returns[String text]: 'INTEGER' {$text = "int";} | 'REAL' {$text = "float";} | 'CHARACTER' {$text = "char";} charlength {$text += $charlength.value; } ;
-charlength returns[String value]: {$value = "";} | '(' NUM_INT_CONST ')' {$value = "["+ $NUM_INT_CONST.text+"]";};
+charlength returns[String value]: {$value = "";} | '(' NUM_INT_CONST ')' {$value = "_["+ $NUM_INT_CONST.text+"]";};
+
 varlist[int is_main, String t]: IDENT init
-    {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text, $t, $init.value));}}
+    {
+        String tipoReal = $t;
+        String nombreVar = $IDENT.text;
+
+        // Desenvolver char_[len] a char var[len]
+        if ($t != null && $t.startsWith("char_[")) {
+            tipoReal = "char";
+            nombreVar = $IDENT.text + $t.substring(5);
+        }
+
+        if(is_main == 1){
+            program.main.parametros.add(new SentenciaAsignacion(nombreVar, tipoReal, $init.value));
+        }
+    }
     varlist_P[$is_main, $t];
 
 varlist_P[int is_main, String t]:
     ',' IDENT init
-    {if(is_main == 1){program.main.parametros.add(new SentenciaAsignacion($IDENT.text, null, $init.value));}}
+    {
+        String nombreVar = $IDENT.text;
+
+        if ($t != null && $t.startsWith("char_[")) {
+            nombreVar = $IDENT.text + $t.substring(5);
+        }
+
+        if(is_main == 1){
+            program.main.parametros.add(new SentenciaAsignacion(nombreVar, null, $init.value));
+        }
+    }
     varlist_P[$is_main, $t]
     | ;
+
 init returns[String value]: | '=' simpvalue{$value = $simpvalue.value;};
 
-//Segunda zona declaraciones
+// Segunda zona de declaraciones
 decproc:  'SUBROUTINE' {subprog.returnType = "void";} idInicio=IDENT {subprog.identificador = $idInicio.text;}
           formal_paramlist dec_s_paramlist[0]
           'END' 'SUBROUTINE' idFin=IDENT
 {
-    // COMPROBACIÓN 1: Coincidencia de identificadores en declaración de SUBROUTINE
     if (!$idInicio.text.equals($idFin.text)) {
         System.err.println("Error Semántico: El SUBROUTINE empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
         program.hayErrores = true;
@@ -85,25 +104,32 @@ nomparamlist: IDENT { subprog.parametros.add(new SentenciaAsignacion($IDENT.text
 nomparamlist_P: | ',' nomparamlist;
 
 dec_s_paramlist[int i]:
-    | tipo {subprog.parametros.get($i).tipo = $tipo.text;} ',' 'INTENT' '(' tipoparam ')' idParam=IDENT
+    | tipo ',' 'INTENT' '(' tipoparam ')' idParam=IDENT
     {
-        // COMPROBACIÓN 2: El nombre del parámetro debe coincidir
         if (!subprog.parametros.get($i).ident.equals($idParam.text)) {
             System.err.println("Error Semántico: El parámetro '" + $idParam.text + "' no coincide con el definido en la cabecera '" + subprog.parametros.get($i).ident + "'.");
             program.hayErrores = true;
         }
-        subprog.parametros.get($i).ident = $tipoparam.value + $idParam.text ;
-    } ';' dec_s_paramlist[$i +1];
+
+        String tipoReal = $tipo.text;
+        String nombreVar = $idParam.text;
+
+        if ($tipo.text != null && $tipo.text.startsWith("char_[")) {
+            tipoReal = "char";
+            nombreVar = $idParam.text + $tipo.text.substring(5);
+        }
+
+        subprog.parametros.get($i).tipo = tipoReal;
+        subprog.parametros.get($i).ident = $tipoparam.value + nombreVar;
+    } ';' dec_s_paramlist[$i + 1];
 tipoparam returns[String value] : 'IN'{$value = "";} | 'OUT'{$value = "*";} | 'INOUT'{$value = "*";};
 
 decfun : 'FUNCTION' idInicio=IDENT {subprog.identificador = $idInicio.text;} '(' nomparamlist ')' tipo {subprog.returnType = $tipo.text;} '::' idRetorno=IDENT';' dec_f_paramlist[0] 'END' 'FUNCTION' idFin=IDENT
 {
-    // COMPROBACIÓN 3 (Declaración): Nombre de la función asociado al tipo devuelto
     if (!$idInicio.text.equals($idRetorno.text)) {
         System.err.println("Error Semántico: En la FUNCTION '" + $idInicio.text + "', el tipo de retorno está asociado a un identificador distinto ('" + $idRetorno.text + "').");
         program.hayErrores = true;
     }
-    // COMPROBACIÓN 1: Coincidencia de nombre al principio y al final
     if (!$idInicio.text.equals($idFin.text)) {
         System.err.println("Error Semántico: La FUNCTION empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
         program.hayErrores = true;
@@ -111,17 +137,27 @@ decfun : 'FUNCTION' idInicio=IDENT {subprog.identificador = $idInicio.text;} '('
 };
 
 dec_f_paramlist[int i]:
-    tipo {subprog.parametros.get($i).tipo = $tipo.text;} ',' 'INTENT' '(' 'IN' ')' idParam=IDENT ';'
+    tipo ',' 'INTENT' '(' 'IN' ')' idParam=IDENT ';'
     {
-        // COMPROBACIÓN 2 (Funciones): El nombre del parámetro debe coincidir
         if (!subprog.parametros.get($i).ident.equals($idParam.text)) {
             System.err.println("Error Semántico: El parámetro '" + $idParam.text + "' no coincide con el definido en la cabecera '" + subprog.parametros.get($i).ident + "'.");
             program.hayErrores = true;
         }
+
+        String tipoReal = $tipo.text;
+        String nombreVar = $idParam.text;
+
+        if ($tipo.text != null && $tipo.text.startsWith("char_[")) {
+            tipoReal = "char";
+            nombreVar = $idParam.text + $tipo.text.substring(5);
+        }
+
+        subprog.parametros.get($i).tipo = tipoReal;
+        subprog.parametros.get($i).ident = nombreVar;
     } dec_f_paramlist[$i + 1]
     | ;
 
-//Zona de sentencias de programas
+// Zona de sentencias
 sent returns[Sentencia value]:
         IDENT '=' exp ';' {$value = new SentExp($IDENT.text, $exp.value);}
        | proc_call ';' {$value = $proc_call.value;}
@@ -223,21 +259,20 @@ factor_P returns[String value] :
     '(' exp explist ')'{$value = "(" + $exp.value + $explist.value + ")";}
     |{$value = "" ;} ;
 
-
 explist returns[String value] :
     ',' exp explist {$value = "," + $exp.value + $explist.value;}
     |{$value = "";} ;
 
 proc_call returns[Sentencia value]: 'CALL' IDENT subpparamlist {
-    // Llamamos a nuestro método en Java pasándole el nombre y el string de parámetros
     String paramsListosParaC = program.procesarParametrosLlamada($IDENT.text, $subpparamlist.value);
-    $value = new SentCall($IDENT.text, paramsListosParaC);};
+    $value = new SentCall($IDENT.text, paramsListosParaC);
+};
 
 subpparamlist returns[String value]:
     '(' exp explist ')' {$value = $exp.value + $explist.value;}
     | {$value = "";};
 
-//Zona de implemetenacion de funciones
+// Zona de implementación de funciones
 subproglist[int i]:  codproc[i] subproglist[i+1] | codfun[i] subproglist[i+1] | ;
 codproc[int i]: 'SUBROUTINE' { subprog = new Subprograma(); } idInicio=IDENT formal_paramlist dec_s_paramlist[0] dcllist[0] sentlist
 {
@@ -256,44 +291,40 @@ codfun[int i]: 'FUNCTION' { subprog = new Subprograma(); } idInicio=IDENT '(' no
 }
     idAsignacion=IDENT '=' exp {program.SubProgList.get($i).returnExp = $exp.value;} ';' 'END' 'FUNCTION' idFin=IDENT
 {
-    // COMPROBACIÓN 3 (Implementación): Nombre de la función asociado al tipo devuelto
     if (!$idInicio.text.equals($idRetorno.text)) {
         System.err.println("Error Semántico: En la implementación de la FUNCTION '" + $idInicio.text + "', el tipo de retorno está asociado a un identificador distinto ('" + $idRetorno.text + "').");
         program.hayErrores = true;
     }
-    // COMPROBACIÓN 3 (Implementación): La última asignación debe ser al nombre de la función
     if (!$idInicio.text.equals($idAsignacion.text)) {
         System.err.println("Error Semántico: La última asignación de la FUNCTION '" + $idInicio.text + "' se hace sobre la variable '" + $idAsignacion.text + "', no sobre el nombre de la función.");
         program.hayErrores = true;
     }
-    // COMPROBACIÓN 1: Coincidencia de nombre al principio y al final
     if (!$idInicio.text.equals($idFin.text)) {
         System.err.println("Error Semántico: La implementación de la FUNCTION empieza por '" + $idInicio.text + "' pero termina en '" + $idFin.text + "'.");
         program.hayErrores = true;
     }
 };
 
-
-//Constantes numericas
+// Constantes numéricas
 NUM_INT_CONST: '-'? [0-9]+ ;
 
-//OPCIONAL NOTABLE
+// Extensiones de bases (Opcional notable)
 NUM_INT_CONST_B: 'b´'[01]+'´';
 NUM_INT_CONST_O: 'o´'[0-7]+'´';
 NUM_INT_CONST_H: 'z´'[0-9A-F]+'´';
 
+// Números reales
+NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+
+                | NUM_INT_CONST ('e'|'E') NUM_INT_CONST
+                | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST;
 
-//Numeros Reales
-NUM_REAL_CONST:  NUM_INT_CONST '.' [0-9]+ //Punto fijo
-                | NUM_INT_CONST ('e'|'E') NUM_INT_CONST// Exponencial
-                | NUM_INT_CONST '.' [0-9]+  ('e'|'E') NUM_INT_CONST; // Mixto
-//Comentarios
+// Comentarios
 COMMENT: '!' ~[\n\r]* ('\n' | '\r') -> skip;
 
-//Identifecadores
+// Identificadores
 IDENT: [a-zA-Z]+ [a-zA-Z0-9_]*;
 
-//Strings
+// Literales de texto
 STRING_CONSTANT: '\''   (~['\n\r] | '\'\'' )* '\''
                 |'"'  (~["\n\r] | '""' )* '"';
 
