@@ -1,10 +1,10 @@
 PROGRAM prueba;
 
-INTERFACE
-FUNCTION suma(a,b) INTEGER :: resta;
-INTEGER, INTENT(IN) a;
-INTEGER, INTENT(IN) b;
-END FUNCTION suma
-END INTERFACE
+    INTERFACE
+        FUNCTION suma(a,b) INTEGER :: resta;
+            INTEGER, INTENT(IN) a;
+            INTEGER, INTENT(IN) b;
+        END FUNCTION suma
+    END INTERFACE
 
 END PROGRAM prueba

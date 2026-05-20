@@ -1,18 +1,17 @@
 PROGRAM prueba;
 
-INTERFACE
-FUNCTION mult(a,b) INTEGER :: mult;
-INTEGER, INTENT(IN) a;
-INTEGER, INTENT(IN) b;
-END FUNCTION mult
-END INTERFACE
+    INTERFACE
+        FUNCTION mult(a,b) INTEGER :: mult;
+            INTEGER, INTENT(IN) a;
+            INTEGER, INTENT(IN) b;
+        END FUNCTION mult
+    END INTERFACE
 
-FUNCTION mult(a,b) INTEGER :: mult;
-INTEGER, INTENT(IN) a;
-INTEGER, INTENT(IN) b;
+    FUNCTION mult(a,b) INTEGER :: mult;
+        INTEGER, INTENT(IN) a;
+        INTEGER, INTENT(IN) b;
 
-x = a * b;
-
-END FUNCTION mult
+        x = a * b;
+    END FUNCTION mult
 
 END PROGRAM prueba
